@@ -12,9 +12,10 @@
     }
     void Boid::accelerer(float dt)
     {
-        if(glm::length(m_vitesse + dt * m_acceleration) < m_vitesse_max )
+        m_vitesse += dt * m_acceleration;
+        if(glm::length(m_vitesse) > m_vitesse_max )
         {
-            m_vitesse += dt * m_acceleration;
+            m_vitesse = m_vitesse * (m_vitesse_max / glm::length(m_vitesse));
         }
     }
     void Boid::deplacer(float dt)
@@ -32,7 +33,7 @@
     }
     void Boid::move(float dt, float aspect_ratio)
     {
-        Boid::deplacer(dt);
         Boid::accelerer(dt);
+        Boid::deplacer(dt);
         Boid::teleporter(aspect_ratio);
     }

@@ -27,6 +27,8 @@ int main()
     force2.invert(boid2);
     boid2.ajouter_force(force2.get());
 
+    Force avoidance;
+
     // Declare your infinite update loop.
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::PurpleHeart);
@@ -38,6 +40,8 @@ int main()
             p6::Center{boid2.get_position()},
             p6::Radius{0.05f}
         );
+        avoidance.avoidance(boid1, boid2);
+        boid1.ajouter_force(avoidance.get());
         boid1.move(ctx.delta_time(), ctx.aspect_ratio());
         boid2.move(ctx.delta_time(), ctx.aspect_ratio());
     };
