@@ -1,0 +1,9 @@
+********* TIPS DE CODE *********
+
+- if() autour de la déclaration d'un slider permet de mettre à jour automatiquement les boids
+- si le destructeur ne fait rien, on ne l'écrit même pas car il est déjà implémenté implicitement
+- mettre le plus possible les fonctionnalités dans les classes pour éviter de se répéter dans le code ("don't repeat yourself")
+- on peut mettre une valeur par défaut directement quand on spécifie les attributs de la classe 
+    ex:
+        int p(222); -> sa valeur par défaut sera 222 si rien n'est spécifié dans les constructeurs
+- le mot clef continue veut dire "arrête toi là et passe à l'itération suivante de la boucle", ça peut être bien car ça permet d'enlever un niveau d'indentation à un if-else (on n'a plus à marquer le else du coup)
