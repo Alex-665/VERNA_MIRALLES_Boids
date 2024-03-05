@@ -17,7 +17,6 @@
         {
             m_vitesse = m_vitesse * (m_vitesse_max / glm::length(m_vitesse));
         }
-        //std::cout << m_vitesse.x << " | " << m_vitesse.y << " | " << m_vitesse.z << "\n";
     }
     void Boid::deplacer(float dt)
     {
@@ -39,4 +38,8 @@
         Boid::accelerer(dt);
         Boid::deplacer(dt);
         Boid::teleporter(aspect_ratio);
+    }
+    void Boid::reset_acceleration()
+    {
+        m_acceleration = glm::vec3(0,0,0);
     }

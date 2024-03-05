@@ -5,8 +5,10 @@
 class Force {
     private:
         glm::vec3 m_value;
+        float m_multiplicator = 1;
     public:
         Force() = default;
+        Force (float m) : m_multiplicator(m) {};
         inline glm::vec3 get() {return m_value;};
         void invert(Boid self);
         void avoidance(Boid self, Boid b);

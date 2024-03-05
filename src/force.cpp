@@ -1,4 +1,5 @@
 #include "force.hpp"
+#include "glm/fwd.hpp"
 
 void Force::invert(Boid self) 
 {
@@ -9,13 +10,9 @@ void Force::invert(Boid self)
 }
 void Force::avoidance(Boid self, Boid b)
 {
-    if(glm::length(b.get_position() - self.get_position()) <= self.get_radius()){
-        if(glm::length(b.get_position() - self.get_position()) > 0.01)
-        {
-            m_value.x = -1.f/(b.get_position().x - self.get_position().x);
-            m_value.y = -1.f/(b.get_position().y - self.get_position().y);
-            m_value.z = -1.f/(b.get_position().z - self.get_position().z);
-        }
-        
+    if(glm::length(b.get_position() - self.get_position()) <= self.get_radius())
+    {
+        m_value = - m_multiplicator * (b.get_position() - self.get_position()) / (glm::length(b.get_position() - self.get_position()) * glm::length(b.get_position() - self.get_position()));
     }
+    else m_value = glm::vec3(0,0,0);
 }

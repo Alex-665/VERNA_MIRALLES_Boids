@@ -18,16 +18,9 @@ int main()
     auto ctx = p6::Context{{WIDTH, HEIGHT, "Simple-p6-Setup"}};
     //ctx.maximize_window();
     Boid boid1 = Boid();
-    Boid boid2 = Boid(glm::vec3(0.f, 0.5f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), 1.f);
+    Boid boid2 = Boid(glm::vec3(0.f, 0.5f, 0.f), glm::vec3(0.5f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), 1.f);
     boid1.set_vitesse_max(1.);
-    glm::vec3 force(1., 0., 0.);
-    boid1.ajouter_force(force);
-    
-    Force force2;
-    force2.invert(boid2);
-    boid2.ajouter_force(force2.get());
-
-    Force avoidance;
+    Force avoidance(1.0f);
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
@@ -40,9 +33,13 @@ int main()
             p6::Center{boid2.get_position()},
             p6::Radius{0.05f}
         );
+        boid1.reset_acceleration();
         avoidance.avoidance(boid1, boid2);
         boid1.ajouter_force(avoidance.get());
         boid1.move(ctx.delta_time(), ctx.aspect_ratio());
+        boid2.reset_acceleration();
+        avoidance.avoidance(boid2, boid1);
+        boid2.ajouter_force(avoidance.get());
         boid2.move(ctx.delta_time(), ctx.aspect_ratio());
     };
 

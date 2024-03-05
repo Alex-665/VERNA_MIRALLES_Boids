@@ -2,6 +2,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include "doctest/doctest.h"
+#include "glm/fwd.hpp"
 #include "p6/p6.h"
 #include <vector>
 
@@ -21,6 +22,7 @@ class Boid
     glm::vec3 get_position();
     float get_radius() {return m_radius;};
     inline glm::vec3 get_velocity() {return m_vitesse;};
+    void reset_acceleration();
     void ajouter_force(glm::vec3 force);
     void accelerer(float dt);
     void deplacer(float dt);
