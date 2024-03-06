@@ -1,7 +1,18 @@
 #include "boid.hpp"
 
 // static constexpr vitesse_max = 1;
-
+    float my_rand01()
+    {
+        float randomNumber = 2 * (float)rand() / (float)RAND_MAX - 1;
+        return randomNumber;
+    }
+    Boid::Boid()
+    {
+        m_position = glm::vec3(my_rand01(), my_rand01(), 0);  
+        m_vitesse =  glm::vec3(my_rand01(), my_rand01(), 0); 
+        m_acceleration = glm::vec3(my_rand01(), my_rand01(), 0);
+        m_vitesse_max = 1.f;
+    }
     glm::vec3 Boid::get_position() 
     {
         return m_position;

@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include "doctest/doctest.h"
 #include "glm/fwd.hpp"
+#include <random>
 #include "p6/p6.h"
 #include <vector>
 
@@ -17,7 +18,7 @@ class Boid
     std::vector<Boid> m_voisins;
 
     public:
-    Boid() : m_position(glm::vec3(0.f,0.f,0.f)), m_vitesse(glm::vec3(0., 0., 0.)), m_acceleration(glm::vec3(0.f,0.f,0.f)), m_vitesse_max{0} {};
+    Boid();
     Boid(glm::vec3 position, glm::vec3 vitesse, glm::vec3 acceleration, float vitesse_max) : m_position(position), m_vitesse(vitesse), m_acceleration(acceleration), m_vitesse_max(vitesse_max) {};
     glm::vec3 get_position();
     float get_radius() {return m_radius;};
