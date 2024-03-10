@@ -14,7 +14,7 @@ class Boid
     glm::vec3 m_vitesse;
     glm::vec3 m_acceleration;
     float m_vitesse_max;
-    float m_radius = 1;
+    float m_radius = 0.3f;
     std::vector<Boid> m_voisins;
 
     public:

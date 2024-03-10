@@ -23,6 +23,9 @@ class Flock
     void deplacer(float dt);
     void teleporter(float aspect_ratio);
     void move(float dt, float aspect_ratio);
-    void compute_force(Force &f);
+    void compute_avoidance(Force &f);
+    void compute_aligement(Force &f);
+    void compute_centering(Force &f);
+    void compute_forces(Force & avoidance, Force & alignement, Force & centering);
     inline std::vector<Boid> get_boids(){return boids;};
 };

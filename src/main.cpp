@@ -26,7 +26,9 @@ int main()
         Boid tmp;
         flock.add_boid(tmp);
     }
-    Force avoidance(1.0f);
+    Force avoidance(.25f); //Tendance à augmenter la distance inter-boids
+    Force alignement(1.f); //Tendance à former des gros groupes facilement
+    Force centering(3.f); //Tendance à diminuer le rayon d'un groupe de boid
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
@@ -36,11 +38,11 @@ int main()
         {
             ctx.circle(
                 p6::Center{e.get_position()},
-                p6::Radius{0.05f}
+                p6::Radius{0.02f}
             );
         }
         flock.reset_acceleration();
-        flock.compute_force(avoidance);
+        flock.compute_forces(avoidance, alignement, centering);
         flock.move(ctx.delta_time(), ctx.aspect_ratio());
     };
 
