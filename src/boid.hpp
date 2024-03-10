@@ -20,7 +20,7 @@ class Boid
     public:
     Boid();
     Boid(glm::vec3 position, glm::vec3 vitesse, glm::vec3 acceleration, float vitesse_max) : m_position(position), m_vitesse(vitesse), m_acceleration(acceleration), m_vitesse_max(vitesse_max) {};
-    glm::vec3 get_position();
+    glm::vec3 get_position() const;
     float get_radius() {return m_radius;};
     inline glm::vec3 get_velocity() {return m_vitesse;};
     void reset_acceleration();

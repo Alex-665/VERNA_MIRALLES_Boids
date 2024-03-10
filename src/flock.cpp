@@ -53,3 +53,17 @@
             e.move(dt, aspect_ratio);
         }
    }
+   void Flock::compute_force(Force &f)
+   {
+    for(auto &b : this->boids)
+    {
+        for(const auto &o : this->boids)
+        {
+            if(&b != &o)
+            {
+                f.avoidance(b, o);
+                b.ajouter_force(f.get());
+            }
+        }
+    }
+   }

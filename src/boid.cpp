@@ -13,7 +13,7 @@
         m_acceleration = glm::vec3(my_rand01(), my_rand01(), 0);
         m_vitesse_max = 1.f;
     }
-    glm::vec3 Boid::get_position() 
+    glm::vec3 Boid::get_position() const
     {
         return m_position;
     }

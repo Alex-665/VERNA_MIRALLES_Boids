@@ -4,6 +4,7 @@
 #include "glm/fwd.hpp"
 #include "boid.hpp"
 #include "p6/p6.h"
+#include "force.hpp"
 #include <vector>
 
 class Flock
@@ -22,5 +23,6 @@ class Flock
     void deplacer(float dt);
     void teleporter(float aspect_ratio);
     void move(float dt, float aspect_ratio);
+    void compute_force(Force &f);
     inline std::vector<Boid> get_boids(){return boids;};
 };
