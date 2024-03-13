@@ -2,7 +2,7 @@
 #include "p6/p6.h"
 #include "boid.hpp"
 
-class Force {
+class Force { //Pas besoin de la classe
     private:
         glm::vec3 m_value;
         float m_multiplicator = 1;
@@ -16,3 +16,8 @@ class Force {
         void alignement(Boid self, Boid b);
         void all();
 };
+
+glm::vec3 invert(Boid self);
+glm::vec3 avoidance(Boid self, Boid b, float multiplicator);
+glm::vec3 alignement(Boid self, Boid b, float multiplicator);
+glm::vec3 centering(Boid self, Boid b, float multiplicator);

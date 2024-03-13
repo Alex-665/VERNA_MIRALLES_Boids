@@ -25,9 +25,10 @@ class Boid
     inline glm::vec3 get_velocity() {return m_vitesse;};
     void reset_acceleration();
     void ajouter_force(glm::vec3 force);
-    void accelerer(float dt);
+    void accelerer(float dt, glm::vec3 force);
+    glm::vec3 compute_forces(std::vector<Boid> boids, float avoidance_multiplicator, float alignement_multiplicator, float centering_multiplicator);
     void deplacer(float dt);
     void teleporter(float aspect_ratio);
     void set_vitesse_max(const float vitesse_max);
-    void move(float dt, float aspect_ratio);
+    void update(float dt, float aspect_ratio, std::vector<Boid> boids, float avoidance_multiplicator, float alignement_multiplicator, float centering_multiplicator);
 };
