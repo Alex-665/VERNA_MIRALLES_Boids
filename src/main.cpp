@@ -19,7 +19,7 @@ int main()
     float multiplicator_avoidance = 1.f;
     float multiplicator_centering = 1.f;
     float multiplicator_alignement = 1.f;
-    auto ctx = p6::Context{{WIDTH, HEIGHT, "Simple-p6-Setup"}};
+    auto ctx = p6::Context{{WIDTH, HEIGHT, "Simple-p6-Setup"}}; //Remplacer ici par .width =, .height =, .title =...
     ctx.imgui = [&]() {
         ImGui::Begin("Caractéristiques");
         ImGui::SliderFloat("avoidance multiplicator", &multiplicator_avoidance, 0.01f, 10.f);
@@ -52,12 +52,10 @@ int main()
                 p6::Radius{0.02f}
             );
         }
-        flock.reset_acceleration();
-        Force avoidance(multiplicator_avoidance); //Tendance à augmenter la distance inter-boids
-        Force alignement(multiplicator_alignement); //Tendance à former des gros groupes facilement
-        Force centering(multiplicator_centering); //Tendance à diminuer le rayon d'un groupe de boid
-        flock.compute_forces(avoidance, alignement, centering);
-        flock.move(ctx.delta_time(), ctx.aspect_ratio());
+        flock.update(ctx.delta_time(), ctx.aspect_ratio());
+        flock.set_avoidance_multiplicator(multiplicator_avoidance);
+        flock.set_alignement_multiplicator(multiplicator_alignement);
+        flock.set_centering_multiplicator(multiplicator_centering);
     };
 
     // Should be done last. It starts the infinite loop.
