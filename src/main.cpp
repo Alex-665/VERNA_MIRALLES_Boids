@@ -31,6 +31,34 @@ int main()
     srand(static_cast<unsigned int>(time(NULL))); // Initialize random seed
     //ctx.maximize_window();
     
+    // HERE IS THE INITIALIZATION CODE
+    GLfloat vertices[] = {
+        -0.5f, -0.5f,
+        0.5f, -0.5f,
+        0.0f, 0.5f
+    };
+
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    const GLuint VERTEX_ATTR_POSITION = 0;
+    //const GLuint VERTEX_ATTR_NORMAL = 1;
+    //const GLuint VERTEX_ATTR_TEXTURE = 2;
+    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
+    //glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
+    //glEnableVertexAttribArray(VERTEX_ATTR_TEXTURE);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glVertexAttribPointer(VERTEX_ATTR_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
     Flock flock = Flock();
     for(int i = 0 ; i < 50 ; i++)
     {
@@ -56,8 +84,16 @@ int main()
         flock.set_avoidance_multiplicator(multiplicator_avoidance);
         flock.set_alignement_multiplicator(multiplicator_alignement);
         flock.set_centering_multiplicator(multiplicator_centering);
+
+        glBindVertexArray(vao);
+        //il récupère la matrice du dernier boid pour le suivre
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(0);
     };
 
     // Should be done last. It starts the infinite loop.
     ctx.start();
+
+    glDeleteBuffers(1, &vbo);
+    glDeleteVertexArrays(1, &vao);
 }
