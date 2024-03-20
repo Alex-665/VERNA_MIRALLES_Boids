@@ -1,3 +1,4 @@
+#include <imgui.h>
 #include <cstddef>
 #include <cstdlib>
 #define DOCTEST_CONFIG_IMPLEMENT
@@ -6,6 +7,8 @@
 #include "p6/p6.h"
 #include "boid.hpp"
 #include "force.hpp"
+
+
 
 int main()
 {
@@ -16,15 +19,16 @@ int main()
     // Actual application code
     constexpr int WIDTH = 1280;
     constexpr int HEIGHT = 720;
-    float multiplicator_avoidance = 1.f;
-    float multiplicator_centering = 1.f;
-    float multiplicator_alignement = 1.f;
-    auto ctx = p6::Context{{WIDTH, HEIGHT, "Simple-p6-Setup"}}; //Remplacer ici par .width =, .height =, .title =...
+
+    parameters params;
+
+    auto ctx = p6::Context{{.width = 1280, .height = 720, .title="Simple-p6-Setup"}};
     ctx.imgui = [&]() {
         ImGui::Begin("Caractéristiques");
-        ImGui::SliderFloat("avoidance multiplicator", &multiplicator_avoidance, 0.01f, 10.f);
-        ImGui::SliderFloat("centering multiplicator", &multiplicator_centering, 0.01f, 10.f);
-        ImGui::SliderFloat("alignement multiplicator", &multiplicator_alignement, 0.01f, 10.f);
+        ImGui::SliderFloat("avoidance multiplicator", &params._multiplicator_avoidance, 0.01f, 10.f);
+        ImGui::SliderFloat("centering multiplicator", &params._multiplicator_centering, 0.01f, 10.f);
+        ImGui::SliderFloat("alignement multiplicator", &params._multiplicator_alignement, 0.01f, 10.f);
+        ImGui::SliderInt("boids number", &params._boids_number, 1, 100);
         ImGui::End();
         ImGui::ShowDemoWindow();
     };
@@ -37,9 +41,9 @@ int main()
         Boid tmp;
         flock.add_boid(tmp);
     }
-    Force avoidance(multiplicator_avoidance); //Tendance à augmenter la distance inter-boids
-    Force alignement(multiplicator_alignement); //Tendance à former des gros groupes facilement
-    Force centering(multiplicator_centering); //Tendance à diminuer le rayon d'un groupe de boid
+    Force avoidance(params._multiplicator_avoidance); //Tendance à augmenter la distance inter-boids
+    Force alignement(params._multiplicator_alignement); //Tendance à former des gros groupes facilement
+    Force centering(params._multiplicator_centering); //Tendance à diminuer le rayon d'un groupe de boid
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
@@ -52,10 +56,8 @@ int main()
                 p6::Radius{0.02f}
             );
         }
-        flock.update(ctx.delta_time(), ctx.aspect_ratio());
-        flock.set_avoidance_multiplicator(multiplicator_avoidance);
-        flock.set_alignement_multiplicator(multiplicator_alignement);
-        flock.set_centering_multiplicator(multiplicator_centering);
+        flock.update(ctx.delta_time(), ctx.aspect_ratio(), params);
+        
     };
 
     // Should be done last. It starts the infinite loop.
