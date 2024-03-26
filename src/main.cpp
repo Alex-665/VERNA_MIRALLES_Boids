@@ -17,8 +17,6 @@ int main()
         return EXIT_FAILURE;
 
     // Actual application code
-    constexpr int WIDTH = 1280;
-    constexpr int HEIGHT = 720;
 
     parameters params;
 
@@ -85,6 +83,10 @@ int main()
             );
         }
         flock.update(ctx.delta_time(), ctx.aspect_ratio(), params);
+        glBindVertexArray(vao);
+        //il récupère la matrice du dernier boid pour le suivre
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(0);
         
     };
 
