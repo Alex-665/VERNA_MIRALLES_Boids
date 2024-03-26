@@ -17,6 +17,24 @@
         boids.pop_back();
     }
    }
+   void Flock::set_boid_number(int nb)
+   {
+        if(this->boids.size() < nb)
+        {
+            for(int i = 0 ; i < this->boids.size() - nb ; i++)
+            {
+                const Boid b;
+                this->add_boid(b);
+            }
+        }
+        else
+        {
+            for(int i = 0; i < this->boids.size() - nb ; i++)
+            {
+                this->remove_boid();
+            }
+        }
+   }
 //    void Flock::reset_acceleration()
 //    {
 //     for(auto &e : boids)
@@ -149,8 +167,12 @@
 //         }
 //    }
 
-   void Flock::update(float dt, float aspect_ratio){
+   void Flock::update(float dt, float aspect_ratio, parameters p){
     
     // reset_acceleration();
     move(dt, aspect_ratio);
+    set_avoidance_multiplicator(p._multiplicator_avoidance);
+    set_alignement_multiplicator(p._multiplicator_alignement);
+    set_centering_multiplicator(p._multiplicator_centering);
+    set_boid_number(p._boids_number);
    }

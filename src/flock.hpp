@@ -7,6 +7,13 @@
 #include "force.hpp"
 #include <vector>
 
+struct parameters{
+    float _multiplicator_avoidance = .25f;
+    float _multiplicator_centering = 1.5f;
+    float _multiplicator_alignement = 3.f;
+    int _boids_number = 50;  
+};
+
 class Flock
 {
     private:
@@ -19,9 +26,10 @@ class Flock
     Flock(): boids(0){};
     Flock(int n): boids(n){};
     void add_boid(const Boid& b);
+    void set_boid_number(int nb);
     void remove_boid();
     inline std::vector<Boid> get_boids(){return boids;};
-    void update(float dt, float aspect_ratio);
+    void update(float dt, float aspect_ratio, parameters p);
     void set_avoidance_multiplicator(float m){avoidance_multiplicator = m;};
     void set_alignement_multiplicator(float m){alignement_multiplicator = m;};
     void set_centering_multiplicator(float m){centering_multiplicator = m;};
