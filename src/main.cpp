@@ -4,11 +4,19 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest/doctest.h"
 #include "flock.hpp"
+#include "include_glm.hpp"
 #include "p6/p6.h"
 #include "boid.hpp"
 #include "force.hpp"
 
 
+glm::mat3 translate(float tx, float ty) {
+    return glm::mat3(glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(tx, ty, 1));
+}
+
+glm::mat3 scale(float sx, float sy) {
+    return glm::mat3(glm::vec3(sx, 0, 0), glm::vec3(0, sy, 0), glm::vec3(0, 0, 1));
+}
 
 int main()
 {
@@ -34,6 +42,12 @@ int main()
     //ctx.maximize_window();
     
     // HERE IS THE INITIALIZATION CODE
+    
+    const p6::Shader shader = p6::load_shader(
+            "src/shaders/red.vs.glsl",
+            "src/shaders/red.fs.glsl"
+    );
+
     GLfloat vertices[] = {
         -0.5f, -0.5f,
         0.5f, -0.5f,
@@ -74,18 +88,20 @@ int main()
     // Declare your infinite update loop.
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::PurpleHeart);
+        ctx.square(p6::Center{}, p6::Radius{1.f});
+
+        glBindVertexArray(vao);
         
         for(const auto& e : flock.get_boids())
         {
-            ctx.circle(
-                p6::Center{e.get_position()},
-                p6::Radius{0.02f}
-            );
+            shader.use();
+            GLuint u_translate_boid_matrix = glGetUniformLocation(shader.id(), "u_translate_boid_matrix");
+            glm::mat3 translate_boid_matrix = translate(e.get_position().x, e.get_position().y);
+            translate_boid_matrix = translate_boid_matrix * scale(0.1f, 0.1f);
+            glUniformMatrix3fv(u_translate_boid_matrix, 1, GL_FALSE, glm::value_ptr(translate_boid_matrix));
+            glDrawArrays(GL_TRIANGLES, 0, 3);
         }
         flock.update(ctx.delta_time(), ctx.aspect_ratio(), params);
-        glBindVertexArray(vao);
-        //il récupère la matrice du dernier boid pour le suivre
-        glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
         
     };

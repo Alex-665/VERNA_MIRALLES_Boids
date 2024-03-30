@@ -15,6 +15,11 @@ class Boid
     glm::vec3 m_acceleration;
     float m_vitesse_max;
     float m_radius = 0.3f;
+    std::vector<GLfloat> vertex = {
+        -0.5f, -0.5f,
+        0.5f, -0.5f,
+        0.0f, 0.5f
+    };
     std::vector<Boid> m_voisins;
 
     public:
@@ -23,6 +28,7 @@ class Boid
     glm::vec3 get_position() const;
     float get_radius() {return m_radius;};
     inline glm::vec3 get_velocity() {return m_vitesse;};
+    inline std::vector<GLfloat> get_vertex() {return vertex;};
     void reset_acceleration();
     void ajouter_force(glm::vec3 force);
     void accelerer(float dt, glm::vec3 force);
