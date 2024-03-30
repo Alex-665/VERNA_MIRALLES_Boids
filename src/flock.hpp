@@ -3,7 +3,6 @@
 #include "doctest/doctest.h"
 #include "glm/fwd.hpp"
 #include "boid.hpp"
-#include "p6/p6.h"
 #include "force.hpp"
 #include <vector>
 

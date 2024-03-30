@@ -2,7 +2,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include "doctest/doctest.h"
-#include "glm/fwd.hpp"
+#include "glm/glm.hpp"
 #include <random>
 #include "p6/p6.h"
 #include <vector>
