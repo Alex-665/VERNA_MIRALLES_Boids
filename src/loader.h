@@ -2,11 +2,22 @@
 #include <vector>
 #include "glm/glm.hpp"
 #include <string>
-#include <cstring>
+#include <iostream>
+#define TINYOBJLOADER_IMPLEMENTATION // define this in only *one* .cc
+// Optional. define TINYOBJLOADER_USE_MAPBOX_EARCUT gives robust trinagulation. Requires C++11
+//#define TINYOBJLOADER_USE_MAPBOX_EARCUT
+#include "p6/tiny_obj_loader.h"
 
-bool loadOBJ(
-    const char * path,
-    std::vector < glm::vec3 > & out_vertices,
-    std::vector < glm::vec2 > & out_uvs,
-    std::vector < glm::vec3 > & out_normals
+struct vertex
+{
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec2 uv;
+};
+struct Object3D{
+    std::vector<vertex> vertices;
+};
+
+Object3D loadOBJ(
+    const char * path
 );

@@ -1,13 +1,17 @@
 #include <imgui.h>
 #include <cstddef>
 #include <cstdlib>
+#include <vector>
+#include "glm/fwd.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest/doctest.h"
+#include "p6/p6.h"
 #include "flock.hpp"
 #include "include_glm.hpp"
-#include "p6/p6.h"
 #include "boid.hpp"
 #include "force.hpp"
+#include "loader.h"
+#include <iostream>
 
 
 glm::mat3 translate(float tx, float ty) {
@@ -28,7 +32,7 @@ int main()
 
     parameters params;
 
-    auto ctx = p6::Context{{.width = 1280, .height = 720, .title="Simple-p6-Setup"}};
+    auto ctx = p6::Context{{.width = 720, .height = 720, .title="Simple-p6-Setup"}};
     ctx.imgui = [&]() {
         ImGui::Begin("Caractéristiques");
         ImGui::SliderFloat("avoidance multiplicator", &params._multiplicator_avoidance, 0.01f, 10.f);
@@ -39,14 +43,14 @@ int main()
         ImGui::ShowDemoWindow();
     };
     srand(static_cast<unsigned int>(time(NULL))); // Initialize random seed
+
+    const p6::Shader shader = p6::load_shader(
+        "./shaders/red.vs.glsl",
+        "./shaders/3d.fs.glsl"
+    );
     //ctx.maximize_window();
     
     // HERE IS THE INITIALIZATION CODE
-    
-    const p6::Shader shader = p6::load_shader(
-            "src/shaders/red.vs.glsl",
-            "src/shaders/red.fs.glsl"
-    );
 
     GLfloat vertices[] = {
         -0.5f, -0.5f,
@@ -54,24 +58,27 @@ int main()
         0.0f, 0.5f
     };
 
+    Object3D suzanne = loadOBJ("../models/suzanne.obj");
     GLuint vbo;
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(GLfloat), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, suzanne.vertices.size() * sizeof(vertex), suzanne.vertices.data(), GL_STATIC_DRAW);
+    // std::cout << vertices.size();
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     GLuint vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     const GLuint VERTEX_ATTR_POSITION = 0;
-    //const GLuint VERTEX_ATTR_NORMAL = 1;
+    const GLuint VERTEX_ATTR_NORMAL = 1;
     //const GLuint VERTEX_ATTR_TEXTURE = 2;
     glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-    //glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
+    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
     //glEnableVertexAttribArray(VERTEX_ATTR_TEXTURE);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glVertexAttribPointer(VERTEX_ATTR_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat), 0);
+    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, position));
+    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, normal));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
@@ -99,7 +106,7 @@ int main()
             glm::mat3 translate_boid_matrix = translate(e.get_position().x, e.get_position().y);
             translate_boid_matrix = translate_boid_matrix * scale(0.1f, 0.1f);
             glUniformMatrix3fv(u_translate_boid_matrix, 1, GL_FALSE, glm::value_ptr(translate_boid_matrix));
-            glDrawArrays(GL_TRIANGLES, 0, 3);
+            glDrawArrays(GL_TRIANGLES, 0, suzanne.vertices.size());
         }
         flock.update(ctx.delta_time(), ctx.aspect_ratio(), params);
         glBindVertexArray(0);
