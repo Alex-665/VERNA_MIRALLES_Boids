@@ -2,6 +2,7 @@
 #include <vector>
 #include "glm/glm.hpp"
 #include <string>
+#include <cstring>
 
 bool loadOBJ(
     const char * path,
