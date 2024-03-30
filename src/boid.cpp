@@ -18,10 +18,6 @@
     {
         return m_position;
     }
-    // void Boid::ajouter_force(glm::vec3 force)
-    // {
-    //     m_acceleration += force;
-    // }
     void Boid::accelerer(float dt, glm::vec3 force)
     {
         m_vitesse += dt * force;
@@ -73,7 +69,3 @@
             }if (neighbour_nb != 0) tmp *= 1/static_cast<float>(neighbour_nb); //On pondère la force par le nombre de voisins rencontrés
             return tmp;
     }
-    // void Boid::reset_acceleration()
-    // {
-    //     m_acceleration = glm::vec3(0,0,0);
-    // }
