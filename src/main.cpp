@@ -2,7 +2,9 @@
 #include <cstddef>
 #include <cstdlib>
 #include <vector>
+#include "glm/ext/quaternion_transform.hpp"
 #include "glm/fwd.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest/doctest.h"
 #include "p6/p6.h"
@@ -14,12 +16,12 @@
 #include <iostream>
 
 
-glm::mat3 translate(float tx, float ty) {
-    return glm::mat3(glm::vec3(1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(tx, ty, 1));
+glm::mat4 translate(float tx, float ty, float tz) {
+    return glm::mat4(glm::vec4(1, 0, 0, 0), glm::vec4(0, 1, 0, 0), glm::vec4(0, 0, 1, 0), glm::vec4(tx, ty, tz, 1));
 }
 
-glm::mat3 scale(float sx, float sy) {
-    return glm::mat3(glm::vec3(sx, 0, 0), glm::vec3(0, sy, 0), glm::vec3(0, 0, 1));
+glm::mat4 scale(float sx, float sy, float sz) {
+    return glm::mat4(glm::vec4(sx, 0, 0, 0), glm::vec4(0, sy, 0, 0), glm::vec4(0, 0, sz, 0), glm::vec4(0, 0, 0, 1));
 }
 
 int main()
@@ -92,23 +94,37 @@ int main()
     Force alignement(params._multiplicator_alignement); //Tendance à former des gros groupes facilement
     Force centering(params._multiplicator_centering); //Tendance à diminuer le rayon d'un groupe de boid
 
+    
+    GLint uMVPMatrix = glGetUniformLocation(shader.id(), "uMVPMatrix");
+    GLint uMVMatrix = glGetUniformLocation(shader.id(), "uMVMatrix");
+    GLint uNormalMatrix = glGetUniformLocation(shader.id(), "uNormalMatrix");
+
+    glm::mat4 ProjMatrix;
+    glm::mat4 MVMatrix;
+    glm::mat4 NormalMatrix;
+
     // Declare your infinite update loop.
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::PurpleHeart);
         ctx.square(p6::Center{}, p6::Radius{1.f});
+        ProjMatrix = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
         glBindVertexArray(vao);
+        glEnable(GL_CULL_FACE); //Hide the back faces of the model
         
         for(const auto& e : flock.get_boids())
         {
             shader.use();
-            GLuint u_translate_boid_matrix = glGetUniformLocation(shader.id(), "u_translate_boid_matrix");
-            glm::mat3 translate_boid_matrix = translate(e.get_position().x, e.get_position().y);
-            translate_boid_matrix = translate_boid_matrix * scale(0.1f, 0.1f);
-            glUniformMatrix3fv(u_translate_boid_matrix, 1, GL_FALSE, glm::value_ptr(translate_boid_matrix));
+            MVMatrix = translate(e.get_position().x, e.get_position().y, -2);
+            MVMatrix = MVMatrix * scale(0.1f, 0.1f, 0.1f);
+            MVMatrix = glm::rotate(MVMatrix, ctx.time() , glm::vec3(0,1,0));
+            glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
+            NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
+            glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
+            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
             glDrawArrays(GL_TRIANGLES, 0, suzanne.vertices.size());
         }
-        flock.update(ctx.delta_time(), ctx.aspect_ratio(), params);
+        flock.update(ctx.delta_time(), 1, params);
         glBindVertexArray(0);
         
     };
