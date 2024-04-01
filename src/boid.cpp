@@ -9,9 +9,9 @@
     }
     Boid::Boid()
     {
-        m_position = glm::vec3(my_rand01(), my_rand01(), 0.f);  
-        m_vitesse =  glm::vec3(my_rand01(), my_rand01(), 0.f); 
-        m_acceleration = glm::vec3(my_rand01(), my_rand01(), 0.f);
+        m_position = glm::vec3(my_rand01(), my_rand01(), my_rand01());  
+        m_vitesse =  glm::vec3(my_rand01(), my_rand01(), my_rand01()); 
+        m_acceleration = glm::vec3(my_rand01(), my_rand01(), my_rand01());
         m_vitesse_max = 1.f;
     }
     glm::vec3 Boid::get_position() const
@@ -36,6 +36,9 @@
         else if(m_position.x < -aspect_ratio) m_position.x = aspect_ratio;
         if(m_position.y > 1) m_position.y = -1;
         else if(m_position.y < -1) m_position.y = 1;
+        //rajout pour la coordonnée en z (en attendant d'avoir une bonne caméra)
+        if(m_position.z > -3) m_position.z = -10;
+        else if(m_position.z < -10) m_position.z = -3;
     }
     void Boid::set_vitesse_max(const float vitesse_max)
     {

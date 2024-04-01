@@ -109,7 +109,7 @@ int main()
         for(const auto& e : flock.get_boids())
         {
             shader.use();
-            MVMatrix = translate(e.get_position().x, e.get_position().y, -2);
+            MVMatrix = translate(e.get_position().x, e.get_position().y, e.get_position().z);
             MVMatrix = MVMatrix * scale(0.1f, 0.1f, 0.1f);
             MVMatrix = glm::rotate(MVMatrix, ctx.time() , glm::vec3(0,1,0));
             glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
