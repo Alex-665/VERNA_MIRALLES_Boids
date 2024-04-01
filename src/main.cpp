@@ -14,7 +14,8 @@
 #include "force.hpp"
 #include "loader.h"
 #include <iostream>
-
+#include "vao.hpp"
+#include "vbo.hpp"
 
 glm::mat4 translate(float tx, float ty, float tz) {
     return glm::mat4(glm::vec4(1, 0, 0, 0), glm::vec4(0, 1, 0, 0), glm::vec4(0, 0, 1, 0), glm::vec4(tx, ty, tz, 1));
@@ -47,30 +48,23 @@ int main()
     srand(static_cast<unsigned int>(time(NULL))); // Initialize random seed
 
     const p6::Shader shader = p6::load_shader(
-        "./shaders/red.vs.glsl",
-        "./shaders/3d.fs.glsl"
+        "src/shaders/red.vs.glsl",
+        "src/shaders/3d.fs.glsl"
     );
     //ctx.maximize_window();
     
     // HERE IS THE INITIALIZATION CODE
 
-    GLfloat vertices[] = {
-        -0.5f, -0.5f,
-        0.5f, -0.5f,
-        0.0f, 0.5f
-    };
-
     Object3D suzanne = loadOBJ("../models/suzanne.obj");
-    GLuint vbo;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    Vbo vbo;
+    vbo.gen();
+    vbo.bind();
     glBufferData(GL_ARRAY_BUFFER, suzanne.vertices.size() * sizeof(vertex), suzanne.vertices.data(), GL_STATIC_DRAW);
-    // std::cout << vertices.size();
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    vbo.unbind();
 
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    Vao vao;
+    vao.gen();
+    vao.bind();
     const GLuint VERTEX_ATTR_POSITION = 0;
     const GLuint VERTEX_ATTR_NORMAL = 1;
     //const GLuint VERTEX_ATTR_TEXTURE = 2;
@@ -78,11 +72,11 @@ int main()
     glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
     //glEnableVertexAttribArray(VERTEX_ATTR_TEXTURE);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    vbo.bind();
     glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, position));
     glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, normal));
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    vbo.unbind();
+    vao.unbind();
 
     Flock flock = Flock();
     for(int i = 0 ; i < 50 ; i++)
@@ -109,7 +103,7 @@ int main()
         ctx.square(p6::Center{}, p6::Radius{1.f});
         ProjMatrix = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
-        glBindVertexArray(vao);
+        vao.bind();
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
         
         for(const auto& e : flock.get_boids())
@@ -125,13 +119,12 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, suzanne.vertices.size());
         }
         flock.update(ctx.delta_time(), 1, params);
-        glBindVertexArray(0);
+        vao.unbind();
         
     };
 
     // Should be done last. It starts the infinite loop.
     ctx.start();
 
-    glDeleteBuffers(1, &vbo);
-    glDeleteVertexArrays(1, &vao);
+    //normalement ici les vbo et vao sont détruits automatiquement par les destructeurs désignés
 }
