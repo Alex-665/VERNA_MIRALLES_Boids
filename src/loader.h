@@ -14,6 +14,7 @@ struct vertex
     glm::vec3 normal;
     glm::vec2 uv;
 };
+
 struct Object3D{
     std::vector<vertex> vertices;
 };

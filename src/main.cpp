@@ -16,14 +16,8 @@
 #include <iostream>
 #include "vao.hpp"
 #include "vbo.hpp"
+#include "matrix.hpp"
 
-glm::mat4 translate(float tx, float ty, float tz) {
-    return glm::mat4(glm::vec4(1, 0, 0, 0), glm::vec4(0, 1, 0, 0), glm::vec4(0, 0, 1, 0), glm::vec4(tx, ty, tz, 1));
-}
-
-glm::mat4 scale(float sx, float sy, float sz) {
-    return glm::mat4(glm::vec4(sx, 0, 0, 0), glm::vec4(0, sy, 0, 0), glm::vec4(0, 0, sz, 0), glm::vec4(0, 0, 0, 1));
-}
 
 int main()
 {
@@ -89,19 +83,16 @@ int main()
     Force centering(params._multiplicator_centering); //Tendance à diminuer le rayon d'un groupe de boid
 
     
-    GLint uMVPMatrix = glGetUniformLocation(shader.id(), "uMVPMatrix");
-    GLint uMVMatrix = glGetUniformLocation(shader.id(), "uMVMatrix");
-    GLint uNormalMatrix = glGetUniformLocation(shader.id(), "uNormalMatrix");
+    uGlobalMatrix ugm;
+    getUniformLocations(shader, ugm);
+    globalMatrix gm;
 
-    glm::mat4 ProjMatrix;
-    glm::mat4 MVMatrix;
-    glm::mat4 NormalMatrix;
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::PurpleHeart);
         ctx.square(p6::Center{}, p6::Radius{1.f});
-        ProjMatrix = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
+        gm.ProjMatrix = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
         vao.bind();
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
@@ -109,13 +100,7 @@ int main()
         for(const auto& e : flock.get_boids())
         {
             shader.use();
-            MVMatrix = translate(e.get_position().x, e.get_position().y, e.get_position().z);
-            MVMatrix = MVMatrix * scale(0.1f, 0.1f, 0.1f);
-            MVMatrix = glm::rotate(MVMatrix, ctx.time() , glm::vec3(0,1,0));
-            glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(MVMatrix));
-            NormalMatrix = glm::transpose(glm::inverse(MVMatrix));
-            glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(NormalMatrix));
-            glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(ProjMatrix * MVMatrix));
+            moveBoid(gm, ugm, e, ctx.time());
             glDrawArrays(GL_TRIANGLES, 0, suzanne.vertices.size());
         }
         flock.update(ctx.delta_time(), 1, params);

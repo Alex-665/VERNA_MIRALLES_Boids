@@ -1,4 +1,5 @@
 #include <regex>
+#include "flock.hpp"
 #include "boid.hpp"
 #include "glm/fwd.hpp"
 
