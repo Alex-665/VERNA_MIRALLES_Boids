@@ -7,7 +7,6 @@
 #include "glm/gtc/type_ptr.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest/doctest.h"
-#include "p6/p6.h"
 #include "flock.hpp"
 #include "include_glm.hpp"
 #include "boid.hpp"
@@ -17,7 +16,7 @@
 #include "vao.hpp"
 #include "vbo.hpp"
 #include "matrix.hpp"
-
+#include "texture.hpp"
 
 int main()
 {
@@ -43,7 +42,7 @@ int main()
 
     const p6::Shader shader = p6::load_shader(
         "src/shaders/red.vs.glsl",
-        "src/shaders/3d.fs.glsl"
+        "src/shaders/texture.fs.glsl"
     );
     //ctx.maximize_window();
     
@@ -61,19 +60,20 @@ int main()
     vao.bind();
     const GLuint VERTEX_ATTR_POSITION = 0;
     const GLuint VERTEX_ATTR_NORMAL = 1;
-    //const GLuint VERTEX_ATTR_TEXTURE = 2;
+    const GLuint VERTEX_ATTR_TEXTURE = 2;
     glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
     glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
-    //glEnableVertexAttribArray(VERTEX_ATTR_TEXTURE);
+    glEnableVertexAttribArray(VERTEX_ATTR_TEXTURE);
 
     vbo.bind();
     glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, position));
     glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, normal));
+    glVertexAttribPointer(VERTEX_ATTR_TEXTURE, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, uv));
     vbo.unbind();
     vao.unbind();
 
     Flock flock = Flock();
-    for(int i = 0 ; i < 50 ; i++)
+    for(int i = 0 ; i < 25 ; i++)
     {
         Boid tmp;
         flock.add_boid(tmp);
@@ -87,10 +87,12 @@ int main()
     getUniformLocations(shader, ugm);
     globalMatrix gm;
 
+    texture monkey("../textures/monkey.png");
+    GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
-        ctx.background(p6::NamedColor::PurpleHeart);
+        ctx.background(p6::NamedColor::Almond);
         ctx.square(p6::Center{}, p6::Radius{1.f});
         gm.ProjMatrix = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
@@ -101,7 +103,10 @@ int main()
         {
             shader.use();
             moveBoid(gm, ugm, e, ctx.time());
+            glBindTexture(GL_TEXTURE_2D, monkey.texture_id);
+            glUniform1i(uTexture, 0);
             glDrawArrays(GL_TRIANGLES, 0, suzanne.vertices.size());
+            glBindTexture(GL_TEXTURE_2D, 0);
         }
         flock.update(ctx.delta_time(), 1, params);
         vao.unbind();

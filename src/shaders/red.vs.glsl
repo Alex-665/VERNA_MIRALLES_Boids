@@ -2,10 +2,11 @@
 
 layout(location = 0) in vec3 aVertexPosition;
 layout(location = 1) in vec3 aVertexNormal;
+layout(location = 2) in vec2 aVertexUV;
 
 out vec3 vFragNormal;
 out vec3 vFragPosition;
-//out vec2 vFragUV;
+out vec2 vFragUV;
 
 uniform mat4 uMVPMatrix;
 uniform mat4 uMVMatrix;
@@ -17,6 +18,6 @@ void main() {
 
     vFragPosition = vec3 (uMVMatrix * vertexPosition);
     vFragNormal = vec3 (uNormalMatrix * vertexNormal);
-    //vFragUV = aVertexUV;
+    vFragUV = aVertexUV;
     gl_Position = vec4(uMVPMatrix * vertexPosition);
 };
