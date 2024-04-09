@@ -49,9 +49,9 @@ int main()
     // HERE IS THE INITIALIZATION CODE
 
     Object3D suzanne = loadOBJ("../models/suzanne.obj");
-    Vbo vbo;
+    Vbo vbo(2);
     vbo.gen();
-    vbo.bind();
+    vbo.bind(0);
     glBufferData(GL_ARRAY_BUFFER, suzanne.vertices.size() * sizeof(vertex), suzanne.vertices.data(), GL_STATIC_DRAW);
     vbo.unbind();
 
@@ -64,11 +64,27 @@ int main()
     glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
     glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
     glEnableVertexAttribArray(VERTEX_ATTR_TEXTURE);
+    //to enable the four vec4 of the instancematrix
+    //glEnableVertexAttribArray(3);
+    //glEnableVertexAttribArray(4);
+    //glEnableVertexAttribArray(5);
+    //glEnableVertexAttribArray(6);
 
     vbo.bind();
     glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, position));
     glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, normal));
     glVertexAttribPointer(VERTEX_ATTR_TEXTURE, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, uv));
+    //way for the vao to read the matrix of transformation
+    //glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)offsetof(0 * glm::mat4));
+    //glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)offsetof(1 * glm::mat4));
+    //glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)offsetof(2 * glm::mat4));
+    //glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)offsetof(3 * glm::mat4));
+
+    //glVertexAttribDivisor(3, 1);
+    //glVertexAttribDivisor(4, 1);
+    //glVertexAttribDivisor(5, 1);
+    //glVertexAttribDivisor(6, 1);
+    //
     vbo.unbind();
     vao.unbind();
 

@@ -3,6 +3,7 @@
 layout(location = 0) in vec3 aVertexPosition;
 layout(location = 1) in vec3 aVertexNormal;
 layout(location = 2) in vec2 aVertexUV;
+//layout(location = 3) in mat4 aInstanceMatrix; //matrix with the translation of our models
 
 out vec3 vFragNormal;
 out vec3 vFragPosition;
