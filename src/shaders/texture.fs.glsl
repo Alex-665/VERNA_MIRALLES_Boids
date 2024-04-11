@@ -3,9 +3,11 @@
 in vec2 vFragUV;
 uniform sampler2D uTexture;
 
-out vec3 fFragColor;
+out vec4 fFragColor;
 
 void main() {
-    fFragColor = texture(uTexture, vFragUV).rgb;
+    vec4 tmp = texture(uTexture, vFragUV);
+    if (tmp.a < 0.1) discard;
+    fFragColor = tmp;
 };
 

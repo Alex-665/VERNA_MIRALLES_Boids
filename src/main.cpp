@@ -42,7 +42,7 @@ int main()
 
     const p6::Shader shader = p6::load_shader(
         "src/shaders/red.vs.glsl",
-        "src/shaders/texture.fs.glsl"
+        "src/shaders/normals.fs.glsl"
     );
     //ctx.maximize_window();
     

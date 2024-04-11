@@ -1,5 +1,6 @@
 #include "boid.hpp"
 #include "force.hpp"
+#include "glm/geometric.hpp"
 
 // static constexpr vitesse_max = 1;
     float my_rand01()
@@ -50,6 +51,7 @@
         Boid::accelerer(dt, force);
         Boid::deplacer(dt);
         Boid::teleporter(aspect_ratio);
+        m_direction = m_vitesse / glm::length(m_vitesse);
     }
     glm::vec3 Boid::compute_forces(std::vector<Boid> boids, float avoidance_multiplicator, float alignement_multiplicator, float centering_multiplicator)
     {
