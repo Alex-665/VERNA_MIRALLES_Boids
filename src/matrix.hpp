@@ -15,7 +15,7 @@ struct uGlobalMatrix {
     GLint uNormalMatrix;
 };
 
-void moveBoid(globalMatrix &gm, uGlobalMatrix &ugm, const Boid &b, const float time);
+void moveBoid(globalMatrix &gm, uGlobalMatrix &ugm, glm::mat4 model_matrix);
 void getUniformLocations(const p6::Shader &shader, uGlobalMatrix &ugm);
 
 glm::mat4 translate(float tx, float ty, float tz);
