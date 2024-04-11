@@ -34,7 +34,7 @@ int main()
         ImGui::SliderFloat("avoidance multiplicator", &params._multiplicator_avoidance, 0.01f, 10.f);
         ImGui::SliderFloat("centering multiplicator", &params._multiplicator_centering, 0.01f, 10.f);
         ImGui::SliderFloat("alignement multiplicator", &params._multiplicator_alignement, 0.01f, 10.f);
-        ImGui::SliderInt("boids number", &params._boids_number, 1, 100);
+        ImGui::SliderInt("boids number", &params._boids_number, 1, 1000);
         ImGui::End();
         ImGui::ShowDemoWindow();
     };
@@ -55,10 +55,9 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, suzanne.vertices.size() * sizeof(vertex), suzanne.vertices.data(), GL_STATIC_DRAW);
     vbo.unbind();
 
-    std::vector<glm::mat4> model_matrices(params._boids_number, translate(0, 0, 0));
+    std::vector<glm::mat4> model_matrices(params._boids_number);
 
     vbo.bind(1);
-    //read ou draw ? à voir mais pour l'instant ça marche pas
     glBufferData(GL_ARRAY_BUFFER, model_matrices.size() * sizeof(glm::mat4), model_matrices.data(), GL_DYNAMIC_READ); 
     vbo.unbind();
 
@@ -84,10 +83,10 @@ int main()
     vbo.unbind();
     //way for the vao to read the matrix of transformation
     vbo.bind(1);
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(0 * sizeof(glm::mat4)));
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(1 * sizeof(glm::mat4)));
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(2 * sizeof(glm::mat4)));
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(3 * sizeof(glm::mat4)));
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(0 * sizeof(glm::vec4)));
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(1 * sizeof(glm::vec4)));
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(2 * sizeof(glm::vec4)));
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(3 * sizeof(glm::vec4)));
 
     glVertexAttribDivisor(3, 1);
     glVertexAttribDivisor(4, 1);
@@ -117,22 +116,23 @@ int main()
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
-        //ctx.background(p6::NamedColor::Almond);
+        ctx.background(p6::NamedColor::Almond);
         ctx.square(p6::Center{}, p6::Radius{1.f});
         gm.ProjMatrix = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
         vao.bind();
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
 
+        std::vector<glm::mat4> instanc_matrix(model_matrices.size());
+        std::vector<Boid> e = flock.get_boids();  
         for(size_t i = 0; i<model_matrices.size(); i++) {
-            Boid e = flock.get_boids()[i];  
-            vbo.bind(1);
-            model_matrices[i] = translate(e.get_position().x, e.get_position().y, e.get_position().z);
-            model_matrices[i] =  model_matrices[i] * scale(0.1f, 0.1f, 0.1f);
-            model_matrices[i] = glm::rotate(model_matrices[i], ctx.time() , glm::vec3(0,1,0));
-            glBufferSubData(GL_ARRAY_BUFFER, 0, model_matrices.size() * sizeof(glm::mat4), model_matrices.data());
-            vbo.unbind();
+            instanc_matrix[i] = translate(e[i].get_position().x, e[i].get_position().y, e[i].get_position().z);
+            instanc_matrix[i] =  instanc_matrix[i] * scale(0.1f, 0.1f, 0.1f);
+            instanc_matrix[i] = glm::rotate(instanc_matrix[i], ctx.time() , glm::vec3(0,1,0));
         }
+        vbo.bind(1);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, instanc_matrix.size() * sizeof(glm::mat4), instanc_matrix.data());
+        vbo.unbind();
         
         for(size_t i = 0; i<model_matrices.size(); i++)
         {
