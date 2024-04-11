@@ -55,11 +55,6 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, suzanne.vertices.size() * sizeof(vertex), suzanne.vertices.data(), GL_STATIC_DRAW);
     vbo.unbind();
 
-    std::vector<glm::mat4> model_matrices(params._boids_number);
-
-    vbo.bind(1);
-    glBufferData(GL_ARRAY_BUFFER, model_matrices.size() * sizeof(glm::mat4), model_matrices.data(), GL_DYNAMIC_READ); 
-    vbo.unbind();
 
     Vao vao;
     vao.gen();
@@ -123,21 +118,26 @@ int main()
         vao.bind();
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
 
-        std::vector<glm::mat4> instanc_matrix(model_matrices.size());
+        std::vector<glm::mat4> instanc_matrix(params._boids_number);
         std::vector<Boid> e = flock.get_boids();  
-        for(size_t i = 0; i<model_matrices.size(); i++) {
+        for(size_t i = 0; i<params._boids_number; i++) {
             instanc_matrix[i] = translate(e[i].get_position().x, e[i].get_position().y, e[i].get_position().z);
             instanc_matrix[i] =  instanc_matrix[i] * scale(0.1f, 0.1f, 0.1f);
             instanc_matrix[i] = glm::rotate(instanc_matrix[i], ctx.time() , glm::vec3(0,1,0));
         }
+        //vbo.bind(1);
+        //glBufferSubData(GL_ARRAY_BUFFER, 0, params._boids_number * sizeof(glm::mat4), instanc_matrix.data());
+        //vbo.unbind();
+        //std::vector<glm::mat4> model_matrices(params._boids_number);
+
         vbo.bind(1);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, instanc_matrix.size() * sizeof(glm::mat4), instanc_matrix.data());
+        glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::mat4), instanc_matrix.data(), GL_DYNAMIC_READ); 
         vbo.unbind();
         
-        for(size_t i = 0; i<model_matrices.size(); i++)
+        for(size_t i = 0; i<params._boids_number; i++)
         {
             shader.use();
-            moveBoid(gm, ugm, model_matrices[i]);
+            moveBoid(gm, ugm, instanc_matrix[i]);
             //glDrawArrays(GL_TRIANGLES, 0, suzanne.vertices.size());
         }
         glBindTexture(GL_TEXTURE_2D, monkey.texture_id);
