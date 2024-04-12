@@ -58,7 +58,7 @@ int main()
     vbo.unbind();
 
 
-    Vao vao;
+    Vao vao(1);
     vao.gen();
     vao.bind();
     const GLuint VERTEX_ATTR_POSITION = 0;

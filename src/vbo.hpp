@@ -6,7 +6,6 @@ class Vbo {
         GLsizei m_n {};
         std::vector<GLuint> m_buffers {};
     public:
-        Vbo() = default;
         Vbo(GLsizei n): m_n(n), m_buffers(std::vector<GLuint> (m_n)) {};
         ~Vbo() {glDeleteBuffers(m_n, m_buffers.data());};
         inline void gen() {glGenBuffers(m_n, m_buffers.data());};
