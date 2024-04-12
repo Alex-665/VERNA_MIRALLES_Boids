@@ -4,7 +4,9 @@
 #include <vector>
 #include "glm/ext/quaternion_transform.hpp"
 #include "glm/fwd.hpp"
+#include "glm/geometric.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/trigonometric.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest/doctest.h"
 #include "flock.hpp"
@@ -118,12 +120,14 @@ int main()
         vao.bind();
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
 
+        flock.update(ctx.delta_time(), 1, params);
+        
         std::vector<glm::mat4> instanc_matrix(params._boids_number);
         std::vector<Boid> e = flock.get_boids();  
         for(size_t i = 0; i<params._boids_number; i++) {
             instanc_matrix[i] = translate(e[i].get_position().x, e[i].get_position().y, e[i].get_position().z);
-            instanc_matrix[i] =  instanc_matrix[i] * scale(0.1f, 0.1f, 0.1f);
-            instanc_matrix[i] = glm::rotate(instanc_matrix[i], ctx.time() , glm::vec3(0,1,0));
+            instanc_matrix[i] =  instanc_matrix[i] * scale(0.5f, 0.5f, 0.5f);
+            instanc_matrix[i] = glm::rotate(instanc_matrix[i], -glm::degrees(glm::acos(glm::dot(glm::vec3(0,1,0), glm::vec3(0,0,1)))), glm::cross(glm::vec3(0,1,0), glm::vec3(0,0,1)));
         }
         //vbo.bind(1);
         //glBufferSubData(GL_ARRAY_BUFFER, 0, params._boids_number * sizeof(glm::mat4), instanc_matrix.data());
@@ -145,7 +149,6 @@ int main()
         vao.bind();
         glDrawArraysInstanced(GL_TRIANGLES, 0, suzanne.vertices.size(), params._boids_number);
         glBindTexture(GL_TEXTURE_2D, 0);
-        flock.update(ctx.delta_time(), 1, params);
         vao.unbind();
         
     };

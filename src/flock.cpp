@@ -170,9 +170,9 @@
    void Flock::update(float dt, float aspect_ratio, parameters p){
     
     // reset_acceleration();
+    set_boid_number(p._boids_number);
     move(dt, aspect_ratio);
     set_avoidance_multiplicator(p._multiplicator_avoidance);
     set_alignement_multiplicator(p._multiplicator_alignement);
     set_centering_multiplicator(p._multiplicator_centering);
-    set_boid_number(p._boids_number);
    }
