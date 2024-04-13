@@ -6,6 +6,7 @@
 #include "glm/fwd.hpp"
 #include "glm/geometric.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/gtx/transform.hpp"
 #include "glm/trigonometric.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest/doctest.h"
@@ -44,19 +45,29 @@ int main()
 
     const p6::Shader shader = p6::load_shader(
         "src/shaders/red.vs.glsl",
-        "src/shaders/normals.fs.glsl"
+        "src/shaders/texture.fs.glsl"
+    );
+
+    const p6::Shader draw_shader = p6::load_shader(
+        "src/shaders/classic.vs.glsl",
+        "src/shaders/texture.fs.glsl"
     );
     //ctx.maximize_window();
     
     // HERE IS THE INITIALIZATION CODE
 
-    Object3D suzanne = loadOBJ("../models/suzanne.obj");
-    Vbo vbo(2);
-    vbo.gen();
-    vbo.bind(0);
+    Object3D suzanne = loadOBJ("../models/shark.obj");
+    Vbo boids_vbo(2);
+    boids_vbo.gen();
+    boids_vbo.bind(0);
     glBufferData(GL_ARRAY_BUFFER, suzanne.vertices.size() * sizeof(vertex), suzanne.vertices.data(), GL_STATIC_DRAW);
-    vbo.unbind();
+    boids_vbo.unbind();
 
+    Object3D cube = loadOBJ("../models/cube.obj");
+    Vbo cube_vbo(1);
+    cube_vbo.gen();
+    cube_vbo.bind(0);
+    glBufferData(GL_ARRAY_BUFFER, cube.vertices.size() * sizeof(vertex), cube.vertices.data(), GL_STATIC_DRAW);
 
     Vao vao(1);
     vao.gen();
@@ -73,13 +84,13 @@ int main()
     glEnableVertexAttribArray(5);
     glEnableVertexAttribArray(6);
 
-    vbo.bind(0);
+    boids_vbo.bind(0);
     glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, position));
     glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, normal));
     glVertexAttribPointer(VERTEX_ATTR_TEXTURE, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, uv));
-    vbo.unbind();
+    boids_vbo.unbind();
     //way for the vao to read the matrix of transformation
-    vbo.bind(1);
+    boids_vbo.bind(1);
     glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(0 * sizeof(glm::vec4)));
     glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(1 * sizeof(glm::vec4)));
     glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(2 * sizeof(glm::vec4)));
@@ -90,8 +101,23 @@ int main()
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
     //
-    vbo.unbind();
+    boids_vbo.unbind();
     vao.unbind();
+
+    Vao cube_vao(1);
+    cube_vao.gen();
+    cube_vao.bind();
+    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
+    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
+    glEnableVertexAttribArray(VERTEX_ATTR_TEXTURE);
+
+    cube_vbo.bind(0);
+    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, position));
+    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, normal));
+    glVertexAttribPointer(VERTEX_ATTR_TEXTURE, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, uv));
+    cube_vbo.unbind();
+    cube_vbo.unbind();
+    cube_vao.unbind();
 
     Flock flock = Flock();
     for(int i = 0 ; i < params._boids_number ; i++)
@@ -108,17 +134,36 @@ int main()
     getUniformLocations(shader, ugm);
     globalMatrix gm;
 
-    texture monkey("../textures/monkey.png");
+    texture boids_texture("../textures/shark_texture.png");
+    texture cube_texture("../textures/cube_texture.png");
     GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
+    GLint uMVPMatrix = glGetUniformLocation(draw_shader.id(), "uMVPMatrix");
+    GLint uMVMatrix = glGetUniformLocation(draw_shader.id(), "uMVMatrix");
+    GLint uNormalMatrix = glGetUniformLocation(draw_shader.id(), "uNormalMatrix");
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::Almond);
         ctx.square(p6::Center{}, p6::Radius{1.f});
-        gm.ProjMatrix = glm::perspective(glm::radians(70.f), ctx.aspect_ratio(), 0.1f, 100.f);
+        gm.ProjMatrix = glm::perspective(glm::radians(110.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
-        vao.bind();
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
+        glEnable(GL_DEPTH_TEST); //Checks if the fragment has to be rendered based on it's z value
+
+        //Drawing the cube
+        draw_shader.use();
+        gm.MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0,0,0));
+        gm.MVMatrix = glm::scale(gm.MVMatrix, glm::vec3(5,5,5));
+        gm.NormalMatrix = glm::transpose(glm::inverse(gm.MVMatrix));
+        glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(gm.MVMatrix));
+        glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(gm.NormalMatrix));
+        glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.ProjMatrix * gm.MVMatrix));
+        glBindTexture(GL_TEXTURE_2D, cube_texture.texture_id); 
+        glUniform1i(uTexture, 0);
+        cube_vao.bind();
+        glDrawArrays(GL_TRIANGLES, 0, cube.vertices.size());
+        glBindTexture(GL_TEXTURE_2D, 0);
+        cube_vao.unbind();
 
         flock.update(ctx.delta_time(), 1, params);
         
@@ -127,34 +172,36 @@ int main()
         for(size_t i = 0; i<params._boids_number; i++) {
             instanc_matrix[i] = translate(e[i].get_position().x, e[i].get_position().y, e[i].get_position().z);
             instanc_matrix[i] =  instanc_matrix[i] * scale(0.5f, 0.5f, 0.5f);
-            instanc_matrix[i] = glm::rotate(instanc_matrix[i], -glm::degrees(glm::acos(glm::dot(glm::vec3(0,1,0), glm::vec3(0,0,1)))), glm::cross(glm::vec3(0,1,0), glm::vec3(0,0,1)));
+            //instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::degrees(glm::acos(glm::dot(e[i].get_direction(), e[i].get_velocity()))), glm::cross(e[i].get_direction(), e[i].get_velocity()));
         }
-        //vbo.bind(1);
+        //boids_vbo.bind(1);
         //glBufferSubData(GL_ARRAY_BUFFER, 0, params._boids_number * sizeof(glm::mat4), instanc_matrix.data());
-        //vbo.unbind();
+        //boids_vbo.unbind();
         //std::vector<glm::mat4> model_matrices(params._boids_number);
 
-        vbo.bind(1);
+        boids_vbo.bind(1);
         glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::mat4), instanc_matrix.data(), GL_DYNAMIC_READ); 
-        vbo.unbind();
+        boids_vbo.unbind();
+
+        shader.use();
         
         for(size_t i = 0; i<params._boids_number; i++)
         {
-            shader.use();
             moveBoid(gm, ugm, instanc_matrix[i]);
             //glDrawArrays(GL_TRIANGLES, 0, suzanne.vertices.size());
         }
-        glBindTexture(GL_TEXTURE_2D, monkey.texture_id);
+        glBindTexture(GL_TEXTURE_2D, boids_texture.texture_id);
         glUniform1i(uTexture, 0);
         vao.bind();
         glDrawArraysInstanced(GL_TRIANGLES, 0, suzanne.vertices.size(), params._boids_number);
         glBindTexture(GL_TEXTURE_2D, 0);
         vao.unbind();
+        glClear(GL_DEPTH_BUFFER_BIT);  
         
     };
 
     // Should be done last. It starts the infinite loop.
     ctx.start();
 
-    //normalement ici les vbo et vao sont détruits automatiquement par les destructeurs désignés
+    //normalement ici les boids_vbo et vao sont détruits automatiquement par les destructeurs désignés
 }
