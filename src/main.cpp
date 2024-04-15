@@ -20,6 +20,8 @@
 #include "vbo.hpp"
 #include "matrix.hpp"
 #include "texture.hpp"
+#include "utils.hpp"
+
 
 int main()
 {
@@ -43,16 +45,9 @@ int main()
     };
     srand(static_cast<unsigned int>(time(NULL))); // Initialize random seed
 
-    const p6::Shader shader = p6::load_shader(
-        "src/shaders/red.vs.glsl",
-        "src/shaders/texture.fs.glsl"
-    );
+    const p6::Shader shader(std::string("#version 330 core\n") + std::string("#define INSTANCING\n") + file_content("src/shaders/red.vs.glsl"), file_content("src/shaders/texture.fs.glsl"));
 
-    const p6::Shader draw_shader = p6::load_shader(
-        "src/shaders/classic.vs.glsl",
-        "src/shaders/texture.fs.glsl"
-    );
-    //ctx.maximize_window();
+    const p6::Shader draw_shader(std::string("#version 330 core\n") + file_content("src/shaders/red.vs.glsl"), file_content("src/shaders/texture.fs.glsl"));
     
     // HERE IS THE INITIALIZATION CODE
 
@@ -129,17 +124,17 @@ int main()
     Force alignement(params._multiplicator_alignement); //Tendance à former des gros groupes facilement
     Force centering(params._multiplicator_centering); //Tendance à diminuer le rayon d'un groupe de boid
 
+    globalMatrix gm;
     
     uGlobalMatrix ugm;
-    getUniformLocations(shader, ugm);
-    globalMatrix gm;
+    getUniformLocations(true, shader, ugm);
+
+    uGlobalMatrix cube_ugm;
+    getUniformLocations(false, draw_shader, cube_ugm);
 
     texture boids_texture("../textures/shark_texture.png");
     texture cube_texture("../textures/cube_texture.png");
     GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
-    GLint uMVPMatrix = glGetUniformLocation(draw_shader.id(), "uMVPMatrix");
-    GLint uMVMatrix = glGetUniformLocation(draw_shader.id(), "uMVMatrix");
-    GLint uNormalMatrix = glGetUniformLocation(draw_shader.id(), "uNormalMatrix");
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
@@ -152,12 +147,7 @@ int main()
 
         //Drawing the cube
         draw_shader.use();
-        gm.MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0,0,0));
-        gm.MVMatrix = glm::scale(gm.MVMatrix, glm::vec3(5,5,5));
-        gm.NormalMatrix = glm::transpose(glm::inverse(gm.MVMatrix));
-        glUniformMatrix4fv(uMVMatrix, 1, GL_FALSE, glm::value_ptr(gm.MVMatrix));
-        glUniformMatrix4fv(uNormalMatrix, 1, GL_FALSE, glm::value_ptr(gm.NormalMatrix));
-        glUniformMatrix4fv(uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.ProjMatrix * gm.MVMatrix));
+        matricesCube(gm, cube_ugm);
         glBindTexture(GL_TEXTURE_2D, cube_texture.texture_id); 
         glUniform1i(uTexture, 0);
         cube_vao.bind();
@@ -174,10 +164,6 @@ int main()
             instanc_matrix[i] =  instanc_matrix[i] * scale(0.5f, 0.5f, 0.5f);
             //instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::degrees(glm::acos(glm::dot(e[i].get_direction(), e[i].get_velocity()))), glm::cross(e[i].get_direction(), e[i].get_velocity()));
         }
-        //boids_vbo.bind(1);
-        //glBufferSubData(GL_ARRAY_BUFFER, 0, params._boids_number * sizeof(glm::mat4), instanc_matrix.data());
-        //boids_vbo.unbind();
-        //std::vector<glm::mat4> model_matrices(params._boids_number);
 
         boids_vbo.bind(1);
         glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::mat4), instanc_matrix.data(), GL_DYNAMIC_READ); 
@@ -187,8 +173,7 @@ int main()
         
         for(size_t i = 0; i<params._boids_number; i++)
         {
-            moveBoid(gm, ugm, instanc_matrix[i]);
-            //glDrawArrays(GL_TRIANGLES, 0, suzanne.vertices.size());
+            matricesBoids(gm, ugm, instanc_matrix[i]);
         }
         glBindTexture(GL_TEXTURE_2D, boids_texture.texture_id);
         glUniform1i(uTexture, 0);
