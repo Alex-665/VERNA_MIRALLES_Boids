@@ -10,7 +10,9 @@
     Boid::Boid()
     {
         m_position = glm::vec3(my_rand01(), my_rand01(), my_rand01());  
+        // m_position = glm::vec3(0, 0, -5);  
         m_vitesse =  glm::vec3(my_rand01(), my_rand01(), my_rand01()); 
+        // m_vitesse =  glm::vec3(0, 0, -1); 
         m_acceleration = glm::vec3(my_rand01(), my_rand01(), my_rand01());
         m_vitesse_max = 1.f;
     }
