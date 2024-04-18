@@ -45,9 +45,9 @@ int main()
     };
     srand(static_cast<unsigned int>(time(NULL))); // Initialize random seed
 
-    const p6::Shader shader(std::string("#version 330 core\n") + std::string("#define INSTANCING\n") + file_content("src/shaders/red.vs.glsl"), file_content("src/shaders/texture.fs.glsl"));
+    const p6::Shader shader(std::string("#version 330 core\n") + std::string("#define INSTANCING\n") + file_content("src/shaders/red.vs.glsl"), file_content("src/shaders/point_light.fs.glsl"));
 
-    const p6::Shader draw_shader(std::string("#version 330 core\n") + file_content("src/shaders/red.vs.glsl"), file_content("src/shaders/texture.fs.glsl"));
+    const p6::Shader draw_shader(std::string("#version 330 core\n") + file_content("src/shaders/red.vs.glsl"), file_content("src/shaders/point_light.fs.glsl"));
     
     // HERE IS THE INITIALIZATION CODE
 
@@ -135,10 +135,15 @@ int main()
     texture boids_texture("../textures/shark_texture.png");
     texture cube_texture("../textures/cube_texture.png");
     GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
+    GLint uKd = glGetUniformLocation(shader.id(), "uKd");
+    GLint uKs = glGetUniformLocation(shader.id(), "uKs");
+    GLint uShininess= glGetUniformLocation(shader.id(), "uShininess");
+    GLint uLightPos_vs= glGetUniformLocation(shader.id(), "uLightPos_vs");
+    GLint uLightIntensity = glGetUniformLocation(shader.id(), "uLightIntensity");
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
-        ctx.background(p6::NamedColor::Almond);
+        ctx.background(p6::Color(0.2,0.4,0.6));
         ctx.square(p6::Center{}, p6::Radius{1.f});
         gm.ProjMatrix = glm::perspective(glm::radians(110.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
@@ -150,6 +155,13 @@ int main()
         matricesCube(gm, cube_ugm);
         glBindTexture(GL_TEXTURE_2D, cube_texture.texture_id); 
         glUniform1i(uTexture, 0);
+
+        glUniform3fv(uKd, 1, glm::value_ptr(glm::vec3(1,1,1))); //Uniform values for lighting
+        glUniform3fv(uKs, 1, glm::value_ptr(glm::vec3(1,1,1)));
+        glUniform1f(uShininess, 1);
+        glUniform3fv(uLightPos_vs, 1, glm::value_ptr(glm::vec3(0,0,0)));
+        glUniform3fv(uLightIntensity, 1, glm::value_ptr(glm::vec3(50,50,50)));
+
         cube_vao.bind();
         glDrawArrays(GL_TRIANGLES, 0, cube.vertices.size());
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -177,6 +189,13 @@ int main()
         }
         glBindTexture(GL_TEXTURE_2D, boids_texture.texture_id);
         glUniform1i(uTexture, 0);
+
+        glUniform3fv(uKd, 1, glm::value_ptr(glm::vec3(1,1,1))); //Uniform values for lighting
+        glUniform3fv(uKs, 1, glm::value_ptr(glm::vec3(1,1,1)));
+        glUniform1f(uShininess, 1);
+        glUniform3fv(uLightPos_vs, 1, glm::value_ptr(glm::vec3(0,0,0)));
+        glUniform3fv(uLightIntensity, 1, glm::value_ptr(glm::vec3(5,5,5)));
+
         vao.bind();
         glDrawArraysInstanced(GL_TRIANGLES, 0, suzanne.vertices.size(), params._boids_number);
         glBindTexture(GL_TEXTURE_2D, 0);
