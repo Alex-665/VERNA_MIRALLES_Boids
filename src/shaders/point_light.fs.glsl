@@ -27,5 +27,5 @@ void main() {
     vec4 tmp = texture(uTexture, vFragUV);
     if (tmp.a < 0.1) discard;
     vec4 lightFactor = vec4(blinnPhong(),1);
-    fFragColor = lightFactor * tmp;
+    fFragColor = lightFactor;
 };

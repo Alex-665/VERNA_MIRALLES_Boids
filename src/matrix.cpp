@@ -3,7 +3,7 @@
 void matricesCube(globalMatrix &gm, uGlobalMatrix &ugm)
 {
     gm.MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0,0,0));
-    gm.MVMatrix = glm::scale(gm.MVMatrix, glm::vec3(5,5,5));
+    gm.MVMatrix = glm::scale(gm.MVMatrix, glm::vec3(15,15,15));
     gm.NormalMatrix = glm::transpose(glm::inverse(gm.MVMatrix));
     glUniformMatrix4fv(ugm.uMVMatrix, 1, GL_FALSE, glm::value_ptr(gm.MVMatrix));
     glUniformMatrix4fv(ugm.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(gm.NormalMatrix));

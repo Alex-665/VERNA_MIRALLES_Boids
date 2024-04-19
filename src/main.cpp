@@ -21,7 +21,7 @@
 #include "matrix.hpp"
 #include "texture.hpp"
 #include "utils.hpp"
-
+#include "light.hpp"
 
 int main()
 {
@@ -135,11 +135,17 @@ int main()
     texture boids_texture("../textures/shark_texture.png");
     texture cube_texture("../textures/cube_texture.png");
     GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
-    GLint uKd = glGetUniformLocation(shader.id(), "uKd");
-    GLint uKs = glGetUniformLocation(shader.id(), "uKs");
-    GLint uShininess= glGetUniformLocation(shader.id(), "uShininess");
-    GLint uLightPos_vs= glGetUniformLocation(shader.id(), "uLightPos_vs");
-    GLint uLightIntensity = glGetUniformLocation(shader.id(), "uLightIntensity");
+
+    light point_1(glm::vec3(0,0,0), glm::vec3(150,150,150));
+    light_uniforms l_uniforms;
+    material_params mat_params(glm::vec3(0,1,0), glm::vec3(1,1,1), 1);
+
+    get_uniforms(shader, l_uniforms);
+    // GLint uKd = glGetUniformLocation(shader.id(), "uKd");
+    // GLint uKs = glGetUniformLocation(shader.id(), "uKs");
+    // GLint uShininess= glGetUniformLocation(shader.id(), "uShininess");
+    // GLint uLightPos_vs= glGetUniformLocation(shader.id(), "uLightPos_vs");
+    // GLint uLightIntensity = glGetUniformLocation(shader.id(), "uLightIntensity");
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
@@ -156,11 +162,8 @@ int main()
         glBindTexture(GL_TEXTURE_2D, cube_texture.texture_id); 
         glUniform1i(uTexture, 0);
 
-        glUniform3fv(uKd, 1, glm::value_ptr(glm::vec3(1,1,1))); //Uniform values for lighting
-        glUniform3fv(uKs, 1, glm::value_ptr(glm::vec3(1,1,1)));
-        glUniform1f(uShininess, 1);
-        glUniform3fv(uLightPos_vs, 1, glm::value_ptr(glm::vec3(0,0,0)));
-        glUniform3fv(uLightIntensity, 1, glm::value_ptr(glm::vec3(50,50,50)));
+        point_1.set_intensity(glm::vec3(150,150,150));
+        set_uniforms(l_uniforms, mat_params, point_1);
 
         cube_vao.bind();
         glDrawArrays(GL_TRIANGLES, 0, cube.vertices.size());
@@ -190,11 +193,8 @@ int main()
         glBindTexture(GL_TEXTURE_2D, boids_texture.texture_id);
         glUniform1i(uTexture, 0);
 
-        glUniform3fv(uKd, 1, glm::value_ptr(glm::vec3(1,1,1))); //Uniform values for lighting
-        glUniform3fv(uKs, 1, glm::value_ptr(glm::vec3(1,1,1)));
-        glUniform1f(uShininess, 1);
-        glUniform3fv(uLightPos_vs, 1, glm::value_ptr(glm::vec3(0,0,0)));
-        glUniform3fv(uLightIntensity, 1, glm::value_ptr(glm::vec3(5,5,5)));
+        point_1.set_intensity(glm::vec3(1,1,1));
+        set_uniforms(l_uniforms, mat_params, point_1);
 
         vao.bind();
         glDrawArraysInstanced(GL_TRIANGLES, 0, suzanne.vertices.size(), params._boids_number);
