@@ -136,9 +136,19 @@ int main()
     texture cube_texture("../textures/cube_texture.png");
     GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
 
-    light point_1(glm::vec3(0,0,0), glm::vec3(150,150,150));
+    light point_1(glm::vec3(0,0,0), glm::vec3(5,5,5));
+    light point_2(glm::vec3(0,5,0), glm::vec3(5,5,5));
+
+    glm::vec3 light_positions[] = {
+        point_1.get_position(),
+        point_2.get_position()
+    };
+    glm::vec3 light_intensities[] = {
+        point_1.get_intensity(),
+        point_2.get_intensity()
+    };
     light_uniforms l_uniforms;
-    material_params mat_params(glm::vec3(0,1,0), glm::vec3(1,1,1), 1);
+    material_params mat_params(glm::vec3(1,1,1), glm::vec3(1,1,1), 1);
 
     get_uniforms(shader, l_uniforms);
     // GLint uKd = glGetUniformLocation(shader.id(), "uKd");
@@ -163,7 +173,7 @@ int main()
         glUniform1i(uTexture, 0);
 
         point_1.set_intensity(glm::vec3(150,150,150));
-        set_uniforms(l_uniforms, mat_params, point_1);
+        set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
 
         cube_vao.bind();
         glDrawArrays(GL_TRIANGLES, 0, cube.vertices.size());
@@ -194,7 +204,7 @@ int main()
         glUniform1i(uTexture, 0);
 
         point_1.set_intensity(glm::vec3(1,1,1));
-        set_uniforms(l_uniforms, mat_params, point_1);
+        set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
 
         vao.bind();
         glDrawArraysInstanced(GL_TRIANGLES, 0, suzanne.vertices.size(), params._boids_number);

@@ -7,7 +7,7 @@ struct light_uniforms
     GLint m_uKd;
     GLint m_uKs;
     GLint m_uShininess;
-    GLint m_uLightPos_vs;
+    GLint m_uLightPos;
     GLint m_uLightIntensity;
 };
 
@@ -34,4 +34,4 @@ class light
 };
 
 void get_uniforms(const p6::Shader &shader, light_uniforms &l_u);
-void set_uniforms(const light_uniforms l_u, const material_params m_p, light &l);
+void set_uniforms(const light_uniforms l_u, const material_params m_p, glm::vec3 light_positions[], glm::vec3 light_intensities[]);
