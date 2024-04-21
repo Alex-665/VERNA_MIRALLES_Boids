@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+#include "p6/p6.h"
 
 class Vao {
     private:

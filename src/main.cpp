@@ -22,6 +22,7 @@
 #include "texture.hpp"
 #include "utils.hpp"
 #include "light.hpp"
+#include "renderer.hpp"
 
 int main()
 {
@@ -114,6 +115,9 @@ int main()
     cube_vbo.unbind();
     cube_vao.unbind();
 
+    Renderer cube_renderer(cube_vao, cube);
+    Renderer boids_renderer(vao, suzanne);
+
     Flock flock = Flock();
     for(int i = 0 ; i < params._boids_number ; i++)
     {
@@ -175,10 +179,8 @@ int main()
         point_1.set_intensity(glm::vec3(150,150,150));
         set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
 
-        cube_vao.bind();
-        glDrawArrays(GL_TRIANGLES, 0, cube.vertices.size());
-        glBindTexture(GL_TEXTURE_2D, 0);
-        cube_vao.unbind();
+        cube_renderer.drawClassic();
+
 
         flock.update(ctx.delta_time(), 1, params);
         
@@ -206,10 +208,7 @@ int main()
         point_1.set_intensity(glm::vec3(1,1,1));
         set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
 
-        vao.bind();
-        glDrawArraysInstanced(GL_TRIANGLES, 0, suzanne.vertices.size(), params._boids_number);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        vao.unbind();
+        boids_renderer.drawInstanced(params._boids_number);
         glClear(GL_DEPTH_BUFFER_BIT);  
         
     };
