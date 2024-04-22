@@ -13,7 +13,7 @@
         m_position = glm::vec3(my_rand01(), my_rand01(), my_rand01());  
         m_vitesse =  glm::vec3(my_rand01(), my_rand01(), my_rand01()); 
         m_acceleration = glm::vec3(my_rand01(), my_rand01(), my_rand01());
-        m_vitesse_max = 1.f;
+        m_vitesse_max = 10.f;
     }
     glm::vec3 Boid::get_position() const
     {
@@ -33,13 +33,13 @@
     }
     void Boid::teleporter(float aspect_ratio)
     {
-        if(m_position.x > aspect_ratio) m_position.x = -aspect_ratio;
-        else if(m_position.x < -aspect_ratio) m_position.x = aspect_ratio;
-        if(m_position.y > 1) m_position.y = -1;
-        else if(m_position.y < -1) m_position.y = 1;
+        if(m_position.x > 45) m_position.x = -45;
+        else if(m_position.x < -45) m_position.x = 45;
+        if(m_position.y > 45) m_position.y = -45;
+        else if(m_position.y < -45) m_position.y = 45;
         //rajout pour la coordonnée en z (en attendant d'avoir une bonne caméra)
-        if(m_position.z > -3) m_position.z = -10;
-        else if(m_position.z < -10) m_position.z = -3;
+        if(m_position.z > -0) m_position.z = -45;
+        else if(m_position.z < -45) m_position.z = -0;
     }
     void Boid::set_vitesse_max(const float vitesse_max)
     {
@@ -47,7 +47,7 @@
     }
     void Boid::update(float dt, float aspect_ratio, std::vector<Boid> boids, float avoidance_multiplicator, float alignement_multiplicator, float centering_multiplicator)
     {
-        m_direction = m_vitesse / glm::length(m_vitesse);
+        //m_direction = m_vitesse / glm::length(m_vitesse);
         glm::vec3 force = compute_forces(boids, avoidance_multiplicator, alignement_multiplicator, centering_multiplicator);
         Boid::accelerer(dt, force);
         Boid::deplacer(dt);

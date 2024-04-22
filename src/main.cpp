@@ -52,7 +52,7 @@ int main()
     
     // HERE IS THE INITIALIZATION CODE
 
-    Object3D suzanne = loadOBJ("../models/shark.obj");
+    Object3D suzanne = loadOBJ("../models/rabbit.obj");
     Vbo boids_vbo(2);
     boids_vbo.gen();
     boids_vbo.bind(0);
@@ -136,7 +136,7 @@ int main()
     uGlobalMatrix cube_ugm;
     getUniformLocations(false, draw_shader, cube_ugm);
 
-    texture boids_texture("../textures/shark_texture.png");
+    texture boids_texture("../textures/Rabbit_texture.png");
     texture cube_texture("../textures/cube_texture.png");
     GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
 
@@ -188,8 +188,8 @@ int main()
         std::vector<Boid> e = flock.get_boids();  
         for(size_t i = 0; i<params._boids_number; i++) {
             instanc_matrix[i] = translate(e[i].get_position().x, e[i].get_position().y, e[i].get_position().z);
-            instanc_matrix[i] =  instanc_matrix[i] * scale(0.5f, 0.5f, 0.5f);
-            //instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::degrees(glm::acos(glm::dot(e[i].get_direction(), e[i].get_velocity()))), glm::cross(e[i].get_direction(), e[i].get_velocity()));
+            instanc_matrix[i] =  instanc_matrix[i] * scale(1, 1, 1);
+            //instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::degrees(glm::acos(glm::dot(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity())))), glm::cross(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity())));
         }
 
         boids_vbo.bind(1);

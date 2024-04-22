@@ -1,4 +1,5 @@
 #include "loader.h"
+#include "p6/tiny_obj_loader.h"
 
 Object3D loadOBJ(const char * path)
 {
@@ -9,7 +10,6 @@ Object3D loadOBJ(const char * path)
     std::vector<float> positions;
 
     std::cout << tinyobj::LoadObj(shapes, materials, path);
-
     for(auto s : shapes[0].mesh.positions) positions.push_back(s);
     for(auto i : shapes[0].mesh.indices)
     {
