@@ -7,7 +7,7 @@ void matricesCube(globalMatrix &gm, uGlobalMatrix &ugm)
     gm.NormalMatrix = glm::transpose(glm::inverse(gm.MVMatrix));
     glUniformMatrix4fv(ugm.uMVMatrix, 1, GL_FALSE, glm::value_ptr(gm.MVMatrix));
     glUniformMatrix4fv(ugm.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(gm.NormalMatrix));
-    glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.ProjMatrix * gm.MVMatrix));
+    glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.ProjMatrix * gm.ViewMatrix * gm.MVMatrix));
 }
 
 void matricesBoids(globalMatrix &gm, uGlobalMatrix &ugm, glm::mat4 model_matrix) 
@@ -15,7 +15,7 @@ void matricesBoids(globalMatrix &gm, uGlobalMatrix &ugm, glm::mat4 model_matrix)
     gm.NormalMatrix = glm::transpose(glm::inverse(model_matrix));
     
     glUniformMatrix4fv(ugm.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(gm.NormalMatrix));
-    glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.ProjMatrix));
+    glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.ProjMatrix * gm.ViewMatrix));
 }
 
 void getUniformLocations(const bool instancing, const p6::Shader &shader, uGlobalMatrix &ugm) 

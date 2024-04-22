@@ -43,7 +43,6 @@ int main()
         ImGui::SliderFloat("alignement multiplicator", &params._multiplicator_alignement, 0.01f, 10.f);
         ImGui::SliderInt("boids number", &params._boids_number, 1, 1000);
         ImGui::End();
-        ImGui::ShowDemoWindow();
     };
     srand(static_cast<unsigned int>(time(NULL))); // Initialize random seed
 
@@ -168,6 +167,20 @@ int main()
         ctx.background(p6::Color(0.2,0.4,0.6));
         ctx.square(p6::Center{}, p6::Radius{1.f});
         gm.ProjMatrix = glm::perspective(glm::radians(110.f), ctx.aspect_ratio(), 0.1f, 100.f);
+
+        if (ctx.key_is_pressed(GLFW_KEY_LEFT)) {
+            camera.moveLeft(1.f);
+        }
+        if (ctx.key_is_pressed(GLFW_KEY_RIGHT)) {
+            camera.moveLeft(-1.f);
+        }
+        if (ctx.key_is_pressed(GLFW_KEY_UP)) {
+            camera.moveFront(0.1f);
+        }
+        if (ctx.key_is_pressed(GLFW_KEY_DOWN)) {
+            camera.moveFront(-0.1f);
+        }
+        gm.ViewMatrix = camera.getViewMatrix();
 
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
         glEnable(GL_DEPTH_TEST); //Checks if the fragment has to be rendered based on it's z value

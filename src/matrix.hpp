@@ -7,6 +7,7 @@ struct globalMatrix {
     glm::mat4 MVMatrix;
     glm::mat4 ProjMatrix;
     glm::mat4 NormalMatrix;
+    glm::mat4 ViewMatrix;
 };
 
 struct uGlobalMatrix {
