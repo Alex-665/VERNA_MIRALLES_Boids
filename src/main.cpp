@@ -140,7 +140,7 @@ int main()
     texture cube_texture("../textures/cube_texture.png");
     GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
 
-    light point_1(glm::vec3(0,0,0), glm::vec3(5,5,5));
+    light point_1(glm::vec3(0,0,0), glm::vec3(150, 150, 150));
     light point_2(glm::vec3(0,5,0), glm::vec3(5,5,5));
 
     glm::vec3 light_positions[] = {
