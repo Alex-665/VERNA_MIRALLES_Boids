@@ -180,6 +180,10 @@ int main()
         if (ctx.key_is_pressed(GLFW_KEY_DOWN)) {
             camera.moveFront(-0.1f);
         }
+        if (ctx.mouse_button_is_pressed(p6::Button::Left)) {
+            camera.rotateLeft(-10.f * ctx.mouse_delta().x);
+            camera.rotateUp(10.f * ctx.mouse_delta().y);
+        }
         gm.ViewMatrix = camera.getViewMatrix();
 
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
