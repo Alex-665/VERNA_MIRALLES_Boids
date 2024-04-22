@@ -23,6 +23,7 @@
 #include "utils.hpp"
 #include "light.hpp"
 #include "renderer.hpp"
+#include "freeflyCamera.hpp"
 
 int main()
 {
@@ -52,6 +53,7 @@ int main()
     
     // HERE IS THE INITIALIZATION CODE
 
+    FreeflyCamera camera;
     Object3D suzanne = loadOBJ("../models/rabbit.obj");
     Vbo boids_vbo(2);
     boids_vbo.gen();

@@ -1,6 +1,8 @@
 #pragma once
+#include "p6/p6.h"
+#include "include_glm.hpp"
 
-class freeflyCamera {
+class FreeflyCamera {
     private:
         glm::vec3 m_position;
         float m_phi;
@@ -10,7 +12,7 @@ class freeflyCamera {
         glm::vec3 m_upVector;
         void computeDirectonVectors();
     public:
-        freeflyCamera(): m_position(glm::vec3(0.f, 0.f, 0.f)), m_phi(glm::pi()), m_theta(0.f) 
+        FreeflyCamera(): m_position(glm::vec3(0.f, 0.f, 0.f)), m_phi(glm::pi<float>()), m_theta(0.f) 
     {
         computeDirectonVectors();
     }
