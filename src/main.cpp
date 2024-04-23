@@ -34,6 +34,7 @@ int main()
     // Actual application code
 
     parameters params;
+    int LOD = 0;
 
     auto ctx = p6::Context{{.width = 720, .height = 720, .title="Simple-p6-Setup"}};
     ctx.imgui = [&]() {
@@ -42,6 +43,7 @@ int main()
         ImGui::SliderFloat("centering multiplicator", &params._multiplicator_centering, 0.01f, 10.f);
         ImGui::SliderFloat("alignement multiplicator", &params._multiplicator_alignement, 0.01f, 10.f);
         ImGui::SliderInt("boids number", &params._boids_number, 1, 1000);
+        ImGui::CheckboxFlags("High Details", &LOD, 1);
         ImGui::End();
     };
     srand(static_cast<unsigned int>(time(NULL))); // Initialize random seed
@@ -53,11 +55,11 @@ int main()
     // HERE IS THE INITIALIZATION CODE
 
     FreeflyCamera camera;
-    Object3D suzanne = loadOBJ("../models/rabbit.obj");
+    Object3D rabbit = loadOBJ("../models/rabbit.obj");
     Vbo boids_vbo(2);
     boids_vbo.gen();
     boids_vbo.bind(0);
-    glBufferData(GL_ARRAY_BUFFER, suzanne.vertices.size() * sizeof(vertex), suzanne.vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, rabbit.vertices.size() * sizeof(vertex), rabbit.vertices.data(), GL_STATIC_DRAW);
     boids_vbo.unbind();
 
     Object3D cube = loadOBJ("../models/cube.obj");
@@ -65,6 +67,13 @@ int main()
     cube_vbo.gen();
     cube_vbo.bind(0);
     glBufferData(GL_ARRAY_BUFFER, cube.vertices.size() * sizeof(vertex), cube.vertices.data(), GL_STATIC_DRAW);
+
+    Object3D rabbit_high = loadOBJ("../models/rabbit_high.obj");
+    Vbo boids_highpoly_vbo(2);
+    boids_highpoly_vbo.gen();
+    boids_highpoly_vbo.bind(0);
+    glBufferData(GL_ARRAY_BUFFER, rabbit_high.vertices.size() * sizeof(vertex), rabbit_high.vertices.data(), GL_STATIC_DRAW);
+    boids_highpoly_vbo.unbind();
 
     Vao vao(1);
     vao.gen();
@@ -97,9 +106,39 @@ int main()
     glVertexAttribDivisor(4, 1);
     glVertexAttribDivisor(5, 1);
     glVertexAttribDivisor(6, 1);
-    //
-    boids_vbo.unbind();
     vao.unbind();
+
+    Vao vao_highpoly(1);
+    vao_highpoly.gen();
+    vao_highpoly.bind();
+    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
+    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
+    glEnableVertexAttribArray(VERTEX_ATTR_TEXTURE);
+    //to enable the four vec4 of the instancematrix
+    glEnableVertexAttribArray(3);
+    glEnableVertexAttribArray(4);
+    glEnableVertexAttribArray(5);
+    glEnableVertexAttribArray(6);
+
+    boids_highpoly_vbo.bind(0);
+    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, position));
+    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, normal));
+    glVertexAttribPointer(VERTEX_ATTR_TEXTURE, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, uv));
+    boids_highpoly_vbo.unbind();
+    //way for the vao_highpoly to read the matrix of transformation
+    boids_highpoly_vbo.bind(1);
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(0 * sizeof(glm::vec4)));
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(1 * sizeof(glm::vec4)));
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(2 * sizeof(glm::vec4)));
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(3 * sizeof(glm::vec4)));
+
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
+    //
+    boids_highpoly_vbo.unbind();
+    vao_highpoly.unbind();
 
     Vao cube_vao(1);
     cube_vao.gen();
@@ -117,7 +156,8 @@ int main()
     cube_vao.unbind();
 
     Renderer cube_renderer(cube_vao, cube);
-    Renderer boids_renderer(vao, suzanne);
+    Renderer boids_renderer(vao, rabbit);
+    Renderer boids_highpoly_renderer(vao_highpoly, rabbit_high);
 
     Flock flock = Flock();
     for(int i = 0 ; i < params._boids_number ; i++)
@@ -156,17 +196,12 @@ int main()
     material_params mat_params(glm::vec3(1,1,1), glm::vec3(1,1,1), 1);
 
     get_uniforms(shader, l_uniforms);
-    // GLint uKd = glGetUniformLocation(shader.id(), "uKd");
-    // GLint uKs = glGetUniformLocation(shader.id(), "uKs");
-    // GLint uShininess= glGetUniformLocation(shader.id(), "uShininess");
-    // GLint uLightPos_vs= glGetUniformLocation(shader.id(), "uLightPos_vs");
-    // GLint uLightIntensity = glGetUniformLocation(shader.id(), "uLightIntensity");
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
         ctx.background(p6::Color(0.2,0.4,0.6));
         ctx.square(p6::Center{}, p6::Radius{1.f});
-        gm.ProjMatrix = glm::perspective(glm::radians(110.f), ctx.aspect_ratio(), 0.1f, 100.f);
+        gm.ProjMatrix = glm::perspective(glm::radians(56.f), ctx.aspect_ratio(), 0.1f, 100.f);
 
         if (ctx.key_is_pressed(GLFW_KEY_LEFT)) {
             camera.moveLeft(1.f);
@@ -175,14 +210,14 @@ int main()
             camera.moveLeft(-1.f);
         }
         if (ctx.key_is_pressed(GLFW_KEY_UP)) {
-            camera.moveFront(0.1f);
+            camera.moveFront(1.f);
         }
         if (ctx.key_is_pressed(GLFW_KEY_DOWN)) {
-            camera.moveFront(-0.1f);
+            camera.moveFront(-1.f);
         }
         if (ctx.mouse_button_is_pressed(p6::Button::Left)) {
-            camera.rotateLeft(-10.f * ctx.mouse_delta().x);
-            camera.rotateUp(10.f * ctx.mouse_delta().y);
+            camera.rotateLeft(-50.f * ctx.mouse_delta().x);
+            camera.rotateUp(50.f * ctx.mouse_delta().y);
         }
         gm.ViewMatrix = camera.getViewMatrix();
 
@@ -200,7 +235,6 @@ int main()
 
         cube_renderer.drawClassic();
 
-
         flock.update(ctx.delta_time(), 1, params);
         
         std::vector<glm::mat4> instanc_matrix(params._boids_number);
@@ -211,9 +245,16 @@ int main()
             //instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::degrees(glm::acos(glm::dot(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity())))), glm::cross(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity())));
         }
 
-        boids_vbo.bind(1);
-        glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::mat4), instanc_matrix.data(), GL_DYNAMIC_READ); 
-        boids_vbo.unbind();
+        if(LOD == 0){
+            boids_vbo.bind(1);
+            glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::mat4), instanc_matrix.data(), GL_DYNAMIC_READ); 
+            boids_vbo.unbind();
+        }
+        else {
+            boids_highpoly_vbo.bind(1);
+            glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::mat4), instanc_matrix.data(), GL_DYNAMIC_READ); 
+            boids_highpoly_vbo.unbind();
+        }
 
         shader.use();
         
@@ -227,7 +268,9 @@ int main()
         point_1.set_intensity(glm::vec3(1,1,1));
         set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
 
-        boids_renderer.drawInstanced(params._boids_number);
+        if(LOD == 0) boids_renderer.drawInstanced(params._boids_number);
+        else boids_highpoly_renderer.drawInstanced(params._boids_number);
+
         glClear(GL_DEPTH_BUFFER_BIT);  
         
     };

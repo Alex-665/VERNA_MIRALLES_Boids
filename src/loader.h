@@ -17,6 +17,8 @@ struct vertex
 
 struct Object3D{
     std::vector<vertex> vertices;
+    Object3D(Object3D &o): vertices(o.vertices){};
+    Object3D() = default;
 };
 
 Object3D loadOBJ(
