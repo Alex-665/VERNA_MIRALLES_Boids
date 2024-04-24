@@ -1,13 +1,6 @@
 #pragma once
-#include <vector>
 #include <cmath>
-#include <cstddef>
-#include <iostream>
-#include <random>
-#include <stdlib.h>
-#include <time.h>
-#include <algorithm>
-#include "include_glm.hpp"
+#include "p6/p6.h"
 
 double rand01();
 

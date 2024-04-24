@@ -1,18 +1,13 @@
+#define DOCTEST_CONFIG_IMPLEMENT
+#include "doctest/doctest.h"
 #include <imgui.h>
 #include <cstddef>
 #include <cstdlib>
 #include <vector>
-#include "glm/ext/quaternion_transform.hpp"
 #include "glm/fwd.hpp"
-#include "glm/geometric.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtx/transform.hpp"
 #include "glm/trigonometric.hpp"
 #include "probas.hpp"
-#define DOCTEST_CONFIG_IMPLEMENT
-#include "doctest/doctest.h"
 #include "flock.hpp"
-#include "include_glm.hpp"
 #include "boid.hpp"
 #include "force.hpp"
 #include "loader.h"
@@ -26,6 +21,7 @@
 #include "renderer.hpp"
 #include "freeflyCamera.hpp"
 #include "arpenteur.hpp"
+#include "GLFW/glfw3.h"
 
 int main()
 {
@@ -36,7 +32,8 @@ int main()
     // Actual application code
 
     parameters params;
-    int LOD = 0;
+    static int LOD = 0;
+    static std::string etat_string = "En forme";
 
     auto ctx = p6::Context{{.width = 720, .height = 720, .title="Simple-p6-Setup"}};
     ctx.imgui = [&]() {
@@ -46,6 +43,7 @@ int main()
         ImGui::SliderFloat("alignement multiplicator", &params._multiplicator_alignement, 0.1f, 20.f);
         ImGui::SliderInt("boids number", &params._boids_number, 1, 1000);
         ImGui::CheckboxFlags("High Details", &LOD, 1);
+        ImGui::Text("Etat : %s", etat_string.c_str());
         ImGui::End();
     };
     srand(static_cast<unsigned int>(time(NULL))); // Initialize random seed
@@ -246,12 +244,20 @@ int main()
             //camera.moveFront(-1.f);
             player.move_front(ctx.delta_time());
         }
+        if (ctx.key_is_pressed(GLFW_KEY_SPACE)) {
+            //camera.moveFront(-1.f);
+            player.move_up(ctx.delta_time());
+        }
+        if (ctx.key_is_pressed(GLFW_KEY_LEFT_ALT)) {
+            //camera.moveFront(-1.f);
+            player.move_up(-ctx.delta_time());
+        }
         if (ctx.mouse_button_is_pressed(p6::Button::Left)) {
             camera.rotateLeft(-50.f * ctx.mouse_delta().x);
-            camera.rotateUp(50.f * ctx.mouse_delta().y);
+            camera.rotateUp(-50.f * ctx.mouse_delta().y);
         }
         gm.ViewMatrix = camera.getViewMatrix(player.get_position());
-        point_1.set_position(player.get_position());
+        point_1.set_position(player.get_position() + glm::vec3(0,2,2));
         light_positions[0] = glm::vec4(point_1.get_position(), 1);
         
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
@@ -318,9 +324,21 @@ int main()
         if(((int)(ctx.time()) % 5) == 0 && ((int)(ctx.time() -ctx.delta_time()) % 5) != 0) //On ne change d'état que toutes les 5 secondes
         {
             double random_uniform = rand01();
-            if (random_uniform < etat.getState().x) std::cout << "En forme" << "\n";
-            else if (random_uniform < etat.getState().x + etat.getState().y) std::cout << "Fatigue" << "\n";
-            else std::cout << "Epuise" << "\n";
+            if (random_uniform < etat.getState().x) 
+            {   
+                etat_string = "En Forme";
+                player.set_speed(20.f);
+            }
+            else if (random_uniform < etat.getState().x + etat.getState().y) 
+            {
+                etat_string = "Fatigue Legere";
+                player.set_speed(10.f);
+            }
+            else
+            {
+                etat_string = "Fatigue Lourde";
+                player.set_speed(5.f);
+            }
             etat.nextState();
         }
     };

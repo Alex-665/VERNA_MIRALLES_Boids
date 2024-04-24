@@ -33,7 +33,7 @@ vec3 blinnPhongMulti(int n) {
         float d = distance(uLightPos[i].xyz, vFragPosition);
         lightFactor += (uLightIntensity[i]/(d*d)) * (uKd * dot(wi, vFragNormal) + uKs * pow(dot(halfVector, vFragNormal), uShininess));
     }
-    return lightFactor;
+    return clamp(lightFactor, 0.5, 1);
 }
 
 void main() {

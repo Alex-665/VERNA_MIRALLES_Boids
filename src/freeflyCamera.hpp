@@ -13,7 +13,7 @@ class FreeflyCamera {
         glm::vec3 m_upVector;
         void computeDirectonVectors();
     public:
-        FreeflyCamera(): m_phi(glm::pi<float>()), m_theta(0.f) 
+        FreeflyCamera(): m_phi(0.f), m_theta(0.f) 
     {
         computeDirectonVectors();
     }
