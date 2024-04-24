@@ -15,7 +15,7 @@ void matricesCube(globalMatrix &gm, uGlobalMatrix &ugm)
 
 void matricesSwan(globalMatrix &gm, uGlobalMatrix &ugm, Arpenteur player)
 {
-    gm.MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0,-0.5,-2) + glm::vec3(player.get_position()));
+    gm.MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(player.get_position()));
     gm.MVMatrix = glm::scale(gm.MVMatrix, glm::vec3(0.25,0.25,0.25));
     gm.NormalMatrix = glm::transpose(glm::inverse(gm.MVMatrix));
     glUniformMatrix4fv(ugm.uMVMatrix, 1, GL_FALSE, glm::value_ptr(gm.ViewMatrix * gm.MVMatrix));

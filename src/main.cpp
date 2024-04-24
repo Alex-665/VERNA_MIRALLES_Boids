@@ -239,17 +239,19 @@ int main()
             player.move_right(ctx.delta_time());
         }
         if (ctx.key_is_pressed(GLFW_KEY_UP)) {
-            camera.moveFront(1.f);
+            //camera.moveFront(1.f);
+            player.move_front(-ctx.delta_time());
         }
         if (ctx.key_is_pressed(GLFW_KEY_DOWN)) {
-            camera.moveFront(-1.f);
+            //camera.moveFront(-1.f);
+            player.move_front(ctx.delta_time());
         }
         if (ctx.mouse_button_is_pressed(p6::Button::Left)) {
             camera.rotateLeft(-50.f * ctx.mouse_delta().x);
             camera.rotateUp(50.f * ctx.mouse_delta().y);
         }
-        gm.ViewMatrix = camera.getViewMatrix();
-        point_1.set_position(camera.get_position());
+        gm.ViewMatrix = camera.getViewMatrix(player.get_position());
+        point_1.set_position(player.get_position());
         light_positions[0] = glm::vec4(point_1.get_position(), 1);
         
         glEnable(GL_CULL_FACE); //Hide the back faces of the model

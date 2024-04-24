@@ -9,16 +9,6 @@ void FreeflyCamera::computeDirectonVectors()
     m_upVector = glm::cross(m_frontVector, m_leftVector);
 }
 
-void FreeflyCamera::moveFront(float t)
-{
-    m_position += t * m_frontVector;
-}
-
-void FreeflyCamera::moveLeft(float t)
-{
-    m_position += t * m_leftVector;
-}
-
 void FreeflyCamera::rotateLeft(float degrees)
 {
     m_phi += glm::radians(degrees);
@@ -33,6 +23,6 @@ void FreeflyCamera::rotateUp(float degrees)
 
 glm::mat4 FreeflyCamera::getViewMatrix(glm::vec3 arpenteurPosition) const
 {
-    glm::mat4 view = glm::lookAt(arpenteurPosition + m_frontVector, arpenteurPosition, m_upVector);
+    glm::mat4 view = glm::lookAt(arpenteurPosition + m_distance * m_frontVector, arpenteurPosition, m_upVector);
     return view;
 }
