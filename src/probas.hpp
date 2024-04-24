@@ -23,5 +23,5 @@ class MarkovChain {
 };
 
 inline double uniformLaw() {return rand01();};
-inline double exponentialLaw(float lambda) {return (-1 / lambda) * std::log(my_rand01());};
+inline double exponentialLaw(float lambda) {return (-1 / lambda) * std::log(rand01());};
 int poissonLaw(float lambda);

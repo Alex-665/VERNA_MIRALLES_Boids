@@ -31,8 +31,8 @@ void FreeflyCamera::rotateUp(float degrees)
     computeDirectonVectors();
 }
 
-glm::mat4 FreeflyCamera::getViewMatrix() const
+glm::mat4 FreeflyCamera::getViewMatrix(glm::vec3 arpenteurPosition) const
 {
-    glm::mat4 view = glm::lookAt(m_position, m_position + m_frontVector, m_upVector);
+    glm::mat4 view = glm::lookAt(arpenteurPosition + m_frontVector, arpenteurPosition, m_upVector);
     return view;
 }
