@@ -21,12 +21,12 @@ void main() {
 
     #ifdef INSTANCING
         vFragPosition = vec3 (aInstanceMatrix * vertexPosition);
-        vFragNormal = vec3 (uNormalMatrix * vertexNormal);
+        vFragNormal = normalize(vec3 (uNormalMatrix * vertexNormal));
         gl_Position = vec4(uMVPMatrix * aInstanceMatrix * vertexPosition);
         vFragUV = aVertexUV;
     #else   
         vFragPosition = vec3 (uMVMatrix * vertexPosition);
-        vFragNormal = vec3 (uMVMatrix * vertexNormal);
+        vFragNormal = normalize(vec3 (uMVMatrix * vertexNormal));
         gl_Position = vec4(uMVPMatrix * vertexPosition);
         vFragUV = aVertexUV;
     #endif

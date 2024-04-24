@@ -204,7 +204,7 @@ int main()
     texture swan_texture("../textures/swan_texture.png");
     GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
 
-    light point_1(glm::vec3(0,0,0), glm::vec3(150, 150, 150));
+    light point_1(glm::vec3(0,0,0), glm::vec3(500, 500, 500));
     light point_2(glm::vec3(0,0,0), glm::vec3(50,35,10));
 
     glm::vec4 light_positions[] = {
