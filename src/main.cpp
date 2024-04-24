@@ -25,6 +25,7 @@
 #include "light.hpp"
 #include "renderer.hpp"
 #include "freeflyCamera.hpp"
+#include "arpenteur.hpp"
 
 int main()
 {
@@ -221,6 +222,8 @@ int main()
     light_uniforms l_uniforms;
     material_params mat_params(glm::vec3(1,1,1), glm::vec3(1,1,1), 1);
 
+    Arpenteur player;
+
     // Declare your infinite update loop.
     ctx.update = [&]() {
         ctx.background(p6::Color(0.2,0.4,0.6));
@@ -228,10 +231,12 @@ int main()
         gm.ProjMatrix = glm::perspective(glm::radians(56.f), ctx.aspect_ratio(), 0.1f, 200.f);
 
         if (ctx.key_is_pressed(GLFW_KEY_LEFT)) {
-            camera.moveLeft(1.f);
+            //camera.moveLeft(1.f);
+            player.move_right(-ctx.delta_time());
         }
         if (ctx.key_is_pressed(GLFW_KEY_RIGHT)) {
-            camera.moveLeft(-1.f);
+            //camera.moveLeft(-1.f);
+            player.move_right(ctx.delta_time());
         }
         if (ctx.key_is_pressed(GLFW_KEY_UP)) {
             camera.moveFront(1.f);
@@ -261,7 +266,7 @@ int main()
 
         cube_renderer.drawClassic();
 
-        matricesSwan(gm, swan_ugm, camera);
+        matricesSwan(gm, swan_ugm, player);
         glBindTexture(GL_TEXTURE_2D, swan_texture.texture_id);
 
         get_uniforms(draw_shader, l_uniforms);
