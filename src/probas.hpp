@@ -17,7 +17,7 @@ class MarkovChain {
         glm::mat3 m_transitionMatrix;
     public:
         MarkovChain() = default;
-        MarkovChain(glm::vec3 &s, glm::mat3 &m): m_state(s), m_transitionMatrix(m) {};
+        MarkovChain(glm::vec3 s, glm::mat3 m): m_state(s), m_transitionMatrix(m) {};
         inline void nextState() {m_state = m_transitionMatrix * m_state;};
         inline glm::vec3 getState() {return m_state;};
 };
