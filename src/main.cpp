@@ -39,9 +39,9 @@ int main()
     auto ctx = p6::Context{{.width = 720, .height = 720, .title="Simple-p6-Setup"}};
     ctx.imgui = [&]() {
         ImGui::Begin("Caractéristiques");
-        ImGui::SliderFloat("avoidance multiplicator", &params._multiplicator_avoidance, 0.01f, 10.f);
-        ImGui::SliderFloat("centering multiplicator", &params._multiplicator_centering, 0.01f, 10.f);
-        ImGui::SliderFloat("alignement multiplicator", &params._multiplicator_alignement, 0.01f, 10.f);
+        ImGui::SliderFloat("avoidance multiplicator", &params._multiplicator_avoidance, 0.1f, 20.f);
+        ImGui::SliderFloat("centering multiplicator", &params._multiplicator_centering, 0.1f, 20.f);
+        ImGui::SliderFloat("alignement multiplicator", &params._multiplicator_alignement, 0.1f, 20.f);
         ImGui::SliderInt("boids number", &params._boids_number, 1, 1000);
         ImGui::CheckboxFlags("High Details", &LOD, 1);
         ImGui::End();
@@ -201,7 +201,7 @@ int main()
     ctx.update = [&]() {
         ctx.background(p6::Color(0.2,0.4,0.6));
         ctx.square(p6::Center{}, p6::Radius{1.f});
-        gm.ProjMatrix = glm::perspective(glm::radians(56.f), ctx.aspect_ratio(), 0.1f, 100.f);
+        gm.ProjMatrix = glm::perspective(glm::radians(56.f), ctx.aspect_ratio(), 0.1f, 200.f);
 
         if (ctx.key_is_pressed(GLFW_KEY_LEFT)) {
             camera.moveLeft(1.f);

@@ -7,8 +7,8 @@
 #include <vector>
 
 struct parameters{
-    float _multiplicator_avoidance = .25f;
-    float _multiplicator_centering = 1.5f;
+    float _multiplicator_avoidance = 5.f;
+    float _multiplicator_centering = 1.f;
     float _multiplicator_alignement = 3.f;
     int _boids_number = 50;  
 };

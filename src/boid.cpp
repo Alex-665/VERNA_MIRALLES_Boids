@@ -38,8 +38,8 @@
         if(m_position.y > 45) m_position.y = -45;
         else if(m_position.y < -45) m_position.y = 45;
         //rajout pour la coordonnée en z (en attendant d'avoir une bonne caméra)
-        if(m_position.z > -0) m_position.z = -45;
-        else if(m_position.z < -45) m_position.z = -0;
+        if(m_position.z > 45) m_position.z = -45;
+        else if(m_position.z < -45) m_position.z = 45;
     }
     void Boid::set_vitesse_max(const float vitesse_max)
     {
