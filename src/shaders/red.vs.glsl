@@ -24,10 +24,10 @@ void main() {
         vFragNormal = vec3 (uNormalMatrix * vertexNormal);
         gl_Position = vec4(uMVPMatrix * aInstanceMatrix * vertexPosition);
         vFragUV = aVertexUV;
-    #else
+    #else   
         vFragPosition = vec3 (uMVMatrix * vertexPosition);
         vFragNormal = vec3 (uMVMatrix * vertexNormal);
-        vFragUV = aVertexUV;
         gl_Position = vec4(uMVPMatrix * vertexPosition);
+        vFragUV = aVertexUV;
     #endif
 };

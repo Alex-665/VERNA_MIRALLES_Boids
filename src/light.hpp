@@ -27,11 +27,11 @@ class light
         glm::vec3 m_intensity;
     public:
         light(glm::vec3 pos, glm::vec3 intensity) : m_position(pos), m_intensity(intensity){};
-        inline glm::vec3 get_position() {return m_position;};
+        inline glm::vec3 get_position() const {return m_position;};
         inline glm::vec3 get_intensity() {return m_intensity;};
         inline void set_position(glm::vec3 pos) {m_position = pos;};
         inline void set_intensity(glm::vec3 intensity) {m_intensity = intensity;};
 };
 
 void get_uniforms(const p6::Shader &shader, light_uniforms &l_u);
-void set_uniforms(const light_uniforms l_u, const material_params m_p, glm::vec3 light_positions[], glm::vec3 light_intensities[]);
+void set_uniforms(const light_uniforms l_u, const material_params m_p, glm::vec4 light_positions[], glm::vec3 light_intensities[]);

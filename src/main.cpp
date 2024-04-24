@@ -182,20 +182,19 @@ int main()
     GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
 
     light point_1(glm::vec3(0,0,0), glm::vec3(150, 150, 150));
-    light point_2(glm::vec3(0,5,0), glm::vec3(5,5,5));
+    light point_2(glm::vec3(0,0,0), glm::vec3(50,35,10));
 
-    glm::vec3 light_positions[] = {
-        point_1.get_position(),
-        point_2.get_position()
+    glm::vec4 light_positions[] = {
+        glm::vec4(point_1.get_position(),1),
+        glm::vec4(point_2.get_position(),1)
     };
     glm::vec3 light_intensities[] = {
         point_1.get_intensity(),
         point_2.get_intensity()
     };
+
     light_uniforms l_uniforms;
     material_params mat_params(glm::vec3(1,1,1), glm::vec3(1,1,1), 1);
-
-    get_uniforms(shader, l_uniforms);
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
@@ -220,7 +219,9 @@ int main()
             camera.rotateUp(50.f * ctx.mouse_delta().y);
         }
         gm.ViewMatrix = camera.getViewMatrix();
-
+        point_1.set_position(camera.get_position());
+        light_positions[0] = glm::vec4(point_1.get_position(), 1);
+        
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
         glEnable(GL_DEPTH_TEST); //Checks if the fragment has to be rendered based on it's z value
 
@@ -230,7 +231,7 @@ int main()
         glBindTexture(GL_TEXTURE_2D, cube_texture.texture_id); 
         glUniform1i(uTexture, 0);
 
-        point_1.set_intensity(glm::vec3(150,150,150));
+        get_uniforms(draw_shader, l_uniforms);
         set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
 
         cube_renderer.drawClassic();
@@ -265,7 +266,7 @@ int main()
         glBindTexture(GL_TEXTURE_2D, boids_texture.texture_id);
         glUniform1i(uTexture, 0);
 
-        point_1.set_intensity(glm::vec3(1,1,1));
+        get_uniforms(shader, l_uniforms);
         set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
 
         if(LOD == 0) boids_renderer.drawInstanced(params._boids_number);
