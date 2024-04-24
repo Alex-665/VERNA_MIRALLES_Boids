@@ -8,6 +8,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/trigonometric.hpp"
+#include "probas.hpp"
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest/doctest.h"
 #include "flock.hpp"
@@ -53,6 +54,7 @@ int main()
     const p6::Shader draw_shader(std::string("#version 330 core\n") + file_content("src/shaders/red.vs.glsl"), file_content("src/shaders/point_light.fs.glsl"));
     
     // HERE IS THE INITIALIZATION CODE
+    MarkovChain etat(glm::vec3(1,0,0), glm::mat3(glm::vec3(0.75, 0.20, 0.05), glm::vec3(0.25, 0.5, 0.25), glm::vec3(0.05, 0.35, 0.6)));
 
     FreeflyCamera camera;
     Object3D rabbit = loadOBJ("../models/rabbit.obj");
@@ -304,7 +306,14 @@ int main()
         else boids_highpoly_renderer.drawInstanced(params._boids_number);
 
         glClear(GL_DEPTH_BUFFER_BIT);  
-        
+        if(((int)(ctx.time()) % 5) == 0 && ((int)(ctx.time() -ctx.delta_time()) % 5) != 0) //On ne change d'état que toutes les 5 secondes
+        {
+            double random_uniform = rand01();
+            if (random_uniform < etat.getState().x) std::cout << "En forme" << "\n";
+            else if (random_uniform < etat.getState().x + etat.getState().y) std::cout << "Fatigue" << "\n";
+            else std::cout << "Epuise" << "\n";
+            etat.nextState();
+        }
     };
 
     // Should be done last. It starts the infinite loop.
