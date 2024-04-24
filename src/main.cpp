@@ -257,8 +257,8 @@ int main()
             camera.rotateUp(-50.f * ctx.mouse_delta().y);
         }
         gm.ViewMatrix = camera.getViewMatrix(player.get_position());
-        point_1.set_position(player.get_position() + glm::vec3(0,2,2));
-        light_positions[0] = glm::vec4(point_1.get_position(), 1);
+        point_1.set_position(player.get_position());
+        light_positions[0] = gm.ViewMatrix * glm::vec4(point_1.get_position(), 1);
         
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
         glEnable(GL_DEPTH_TEST); //Checks if the fragment has to be rendered based on it's z value
@@ -288,10 +288,8 @@ int main()
         std::vector<Boid> e = flock.get_boids();  
         for(size_t i = 0; i<params._boids_number; i++) {
             instanc_matrix[i] = translate(e[i].get_position().x, e[i].get_position().y, e[i].get_position().z);
-            //instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::acos(glm::dot(glm::vec3(1.f, 0.f, 0.f), glm::normalize(e[i].get_velocity()))), glm::normalize(glm::cross(glm::vec3(1.f, 0.f, 0.f), glm::normalize(e[i].get_velocity()))));
-            //instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::acos(glm::dot(glm::vec3(0.f, 1.f, 0.f), glm::normalize(e[i].get_velocity()))), glm::normalize(glm::cross(glm::vec3(0.f, 1.f, 0.f), glm::normalize(e[i].get_velocity()))));
-            //instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::acos(glm::dot(glm::vec3(0.f, 0.f, 1.f), glm::normalize(e[i].get_velocity()))), glm::normalize(glm::cross(glm::vec3(0.f, 0.f, 1.f), glm::normalize(e[i].get_velocity()))));
             instanc_matrix[i] =  instanc_matrix[i] * scale(1, 1, 1);
+            instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::acos(glm::dot(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity()))), glm::cross(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity())));
         }
 
         if(LOD == 0){

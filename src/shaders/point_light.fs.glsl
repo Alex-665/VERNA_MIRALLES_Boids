@@ -28,9 +28,9 @@ vec3 blinnPhongMulti(int n) {
     vec3 w0 = normalize(-vFragPosition);
     for(int i = 0 ; i < n ; i++)
     {
-        vec3 wi = normalize(uLightPos[i].xyz - vFragPosition);
+        vec3 wi = normalize(vec3(uLightPos[i]) - vFragPosition);
         vec3 halfVector = (w0 + wi)/2;
-        float d = distance(uLightPos[i].xyz, vFragPosition);
+        float d = distance(vec3(uLightPos[i]), vFragPosition);
         lightFactor += (uLightIntensity[i]/(d*d)) * (uKd * dot(wi, vFragNormal) + uKs * pow(dot(halfVector, vFragNormal), uShininess));
     }
     return clamp(lightFactor, 0.5, 1);
