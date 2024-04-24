@@ -1,7 +1,6 @@
 #pragma once
 
-#include "doctest/doctest.h"
-#include "glm/fwd.hpp"
+#include "p6/p6.h"
 #include "boid.hpp"
 #include "force.hpp"
 #include <vector>
