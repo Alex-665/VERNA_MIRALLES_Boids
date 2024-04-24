@@ -15,7 +15,7 @@ class Boid
     glm::vec3 m_acceleration;
     glm::vec3 m_direction = {0.f,0.f,1.f};
     float m_vitesse_max;
-    float m_radius = 5.f;
+    float m_radius = 25.f;
     std::vector<GLfloat> vertex = {
         -0.5f, -0.5f,
         0.5f, -0.5f,

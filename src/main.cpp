@@ -38,7 +38,7 @@ int main()
     auto ctx = p6::Context{{.width = 720, .height = 720, .title="Simple-p6-Setup"}};
     ctx.imgui = [&]() {
         ImGui::Begin("Caractéristiques");
-        ImGui::SliderFloat("avoidance multiplicator", &params._multiplicator_avoidance, 0.1f, 20.f);
+        ImGui::SliderFloat("avoidance multiplicator", &params._multiplicator_avoidance, 0.1f, 50.f);
         ImGui::SliderFloat("centering multiplicator", &params._multiplicator_centering, 0.1f, 20.f);
         ImGui::SliderFloat("alignement multiplicator", &params._multiplicator_alignement, 0.1f, 20.f);
         ImGui::SliderInt("boids number", &params._boids_number, 1, 1000);
