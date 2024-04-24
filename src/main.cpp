@@ -75,6 +75,13 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, rabbit_high.vertices.size() * sizeof(vertex), rabbit_high.vertices.data(), GL_STATIC_DRAW);
     boids_highpoly_vbo.unbind();
 
+    Object3D swan = loadOBJ("../models/swan.obj");
+    Vbo swan_vbo(1);
+    swan_vbo.gen();
+    swan_vbo.bind(0);
+    glBufferData(GL_ARRAY_BUFFER, swan.vertices.size() * sizeof(vertex), swan.vertices.data(), GL_STATIC_DRAW);
+    swan_vbo.unbind();
+
     Vao vao(1);
     vao.gen();
     vao.bind();
@@ -152,12 +159,24 @@ int main()
     glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, normal));
     glVertexAttribPointer(VERTEX_ATTR_TEXTURE, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, uv));
     cube_vbo.unbind();
-    cube_vbo.unbind();
-    cube_vao.unbind();
+
+    Vao swan_vao(1);
+    swan_vao.gen();
+    swan_vao.bind();
+    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
+    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
+    glEnableVertexAttribArray(VERTEX_ATTR_TEXTURE);
+
+    swan_vbo.bind(0);
+    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, position));
+    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, normal));
+    glVertexAttribPointer(VERTEX_ATTR_TEXTURE, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, uv));
+    swan_vbo.unbind();
 
     Renderer cube_renderer(cube_vao, cube);
     Renderer boids_renderer(vao, rabbit);
     Renderer boids_highpoly_renderer(vao_highpoly, rabbit_high);
+    Renderer swan_renderer(swan_vao, swan);
 
     Flock flock = Flock();
     for(int i = 0 ; i < params._boids_number ; i++)
@@ -177,8 +196,12 @@ int main()
     uGlobalMatrix cube_ugm;
     getUniformLocations(false, draw_shader, cube_ugm);
 
+    uGlobalMatrix swan_ugm;
+    getUniformLocations(false, draw_shader, swan_ugm);
+
     texture boids_texture("../textures/Rabbit_texture.png");
     texture cube_texture("../textures/cube_texture.png");
+    texture swan_texture("../textures/swan_texture.png");
     GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
 
     light point_1(glm::vec3(0,0,0), glm::vec3(150, 150, 150));
@@ -235,6 +258,14 @@ int main()
         set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
 
         cube_renderer.drawClassic();
+
+        matricesSwan(gm, swan_ugm, camera);
+        glBindTexture(GL_TEXTURE_2D, swan_texture.texture_id);
+
+        get_uniforms(draw_shader, l_uniforms);
+        set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
+
+        swan_renderer.drawClassic();
 
         flock.update(ctx.delta_time(), 1, params);
         

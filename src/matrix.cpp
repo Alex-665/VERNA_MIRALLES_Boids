@@ -1,9 +1,22 @@
 #include "matrix.hpp"
+#include "freeflyCamera.hpp"
+#include "glm/ext/quaternion_transform.hpp"
+#include "glm/fwd.hpp"
 
 void matricesCube(globalMatrix &gm, uGlobalMatrix &ugm)
 {
     gm.MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0,0,0));
     gm.MVMatrix = glm::scale(gm.MVMatrix, glm::vec3(15,15,15));
+    gm.NormalMatrix = glm::transpose(glm::inverse(gm.MVMatrix));
+    glUniformMatrix4fv(ugm.uMVMatrix, 1, GL_FALSE, glm::value_ptr(gm.ViewMatrix * gm.MVMatrix));
+    glUniformMatrix4fv(ugm.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(gm.NormalMatrix));
+    glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.ProjMatrix * gm.ViewMatrix * gm.MVMatrix));
+}
+
+void matricesSwan(globalMatrix &gm, uGlobalMatrix &ugm, FreeflyCamera camera)
+{
+    gm.MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0,-0.5,-2) + glm::vec3(camera.get_position()));
+    gm.MVMatrix = glm::scale(gm.MVMatrix, glm::vec3(0.25,0.25,0.25));
     gm.NormalMatrix = glm::transpose(glm::inverse(gm.MVMatrix));
     glUniformMatrix4fv(ugm.uMVMatrix, 1, GL_FALSE, glm::value_ptr(gm.ViewMatrix * gm.MVMatrix));
     glUniformMatrix4fv(ugm.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(gm.NormalMatrix));

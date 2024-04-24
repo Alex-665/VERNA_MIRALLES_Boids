@@ -22,4 +22,9 @@ class FreeflyCamera {
         void rotateUp(float degrees);
         glm::mat4 getViewMatrix() const;
         inline glm::vec3 get_position() {return m_position;};
+        inline glm::vec3 get_frontVector() {return m_frontVector;};
+        inline glm::vec3 get_leftVector() {return m_leftVector;};
+        inline glm::vec3 get_upVector() {return m_upVector;};
+        inline float get_phi() {return m_phi;};
+        inline float get_tetha() {return m_theta;};
 };

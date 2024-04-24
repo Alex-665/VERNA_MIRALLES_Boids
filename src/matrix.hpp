@@ -1,4 +1,5 @@
 #pragma once
+#include "freeflyCamera.hpp"
 #include "p6/p6.h"
 #include "include_glm.hpp"
 #include "boid.hpp"
@@ -17,6 +18,7 @@ struct uGlobalMatrix {
 };
 
 void matricesCube(globalMatrix &gm, uGlobalMatrix &ugm);
+void matricesSwan(globalMatrix &gm, uGlobalMatrix &ugm, FreeflyCamera camera);
 void matricesBoids(globalMatrix &gm, uGlobalMatrix &ugm, glm::mat4 model_matrix);
 void getUniformLocations(const bool instancing, const p6::Shader &shader, uGlobalMatrix &ugm);
 
