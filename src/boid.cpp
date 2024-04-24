@@ -47,7 +47,7 @@
     }
     void Boid::update(float dt, float aspect_ratio, std::vector<Boid> boids, float avoidance_multiplicator, float alignement_multiplicator, float centering_multiplicator)
     {
-        //m_direction = m_vitesse / glm::length(m_vitesse);
+        //m_direction = glm::normalize(m_vitesse);
         glm::vec3 force = compute_forces(boids, avoidance_multiplicator, alignement_multiplicator, centering_multiplicator);
         Boid::accelerer(dt, force);
         Boid::deplacer(dt);

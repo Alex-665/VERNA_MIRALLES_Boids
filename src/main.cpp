@@ -282,8 +282,10 @@ int main()
         std::vector<Boid> e = flock.get_boids();  
         for(size_t i = 0; i<params._boids_number; i++) {
             instanc_matrix[i] = translate(e[i].get_position().x, e[i].get_position().y, e[i].get_position().z);
+            //instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::acos(glm::dot(glm::vec3(1.f, 0.f, 0.f), glm::normalize(e[i].get_velocity()))), glm::normalize(glm::cross(glm::vec3(1.f, 0.f, 0.f), glm::normalize(e[i].get_velocity()))));
+            //instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::acos(glm::dot(glm::vec3(0.f, 1.f, 0.f), glm::normalize(e[i].get_velocity()))), glm::normalize(glm::cross(glm::vec3(0.f, 1.f, 0.f), glm::normalize(e[i].get_velocity()))));
+            //instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::acos(glm::dot(glm::vec3(0.f, 0.f, 1.f), glm::normalize(e[i].get_velocity()))), glm::normalize(glm::cross(glm::vec3(0.f, 0.f, 1.f), glm::normalize(e[i].get_velocity()))));
             instanc_matrix[i] =  instanc_matrix[i] * scale(1, 1, 1);
-            //instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::degrees(glm::acos(glm::dot(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity())))), glm::cross(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity())));
         }
 
         if(LOD == 0){
