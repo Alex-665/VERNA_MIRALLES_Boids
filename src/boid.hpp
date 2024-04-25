@@ -1,9 +1,7 @@
 #pragma once
-#include <cstddef>
-#include <cstdlib>
 #include "doctest/doctest.h"
-#include "glm/glm.hpp"
-#include <random>
+#include "glm/geometric.hpp"
+#include "include_glm.hpp"
 #include "p6/p6.h"
 #include <vector>
 
