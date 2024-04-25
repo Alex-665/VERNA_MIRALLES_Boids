@@ -6,7 +6,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION // define this in only *one* .cc
 #include "p6/tiny_obj_loader.h"
 
-struct vertex
+struct Vertex
 {
     glm::vec3 position;
     glm::vec3 normal;
@@ -14,7 +14,7 @@ struct vertex
 };
 
 struct Object3D{
-    std::vector<vertex> vertices;
+    std::vector<Vertex> vertices;
     Object3D(Object3D &o): vertices(o.vertices){};
     Object3D() = default;
 };
