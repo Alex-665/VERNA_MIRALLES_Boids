@@ -1,7 +1,7 @@
 #include "loader.h"
 #include "p6/tiny_obj_loader.h"
 
-Object3D loadOBJ(const char * path)
+Object3D load_obj(const char * path)
 {
     Object3D toreturn;
 

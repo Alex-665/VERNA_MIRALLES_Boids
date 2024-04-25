@@ -17,6 +17,6 @@ class Renderer {
         setupBufferData();
         setupAttribArray(instanced);
     };
-        void drawClassic();
+        void draw_classic();
         void drawInstanced(int number);
 };

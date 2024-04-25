@@ -24,7 +24,7 @@ int main()
 
     // Actual application code
 
-    parameters params;
+    Parameters params;
     static int LOD = 0;
     static std::string etat_string = "En forme";
 
@@ -50,28 +50,28 @@ int main()
 
     FreeflyCamera camera;
 
-    Object3D rabbit = loadOBJ("../models/rabbit.obj");
+    Object3D rabbit = load_obj("../models/rabbit.obj");
     Vbo boids_vbo(2);
     boids_vbo.gen();
     Vao vao(1);
     vao.gen();
     Renderer boids_renderer(vao, boids_vbo, rabbit, true);
 
-    Object3D cube = loadOBJ("../models/cube.obj");
+    Object3D cube = load_obj("../models/cube.obj");
     Vbo cube_vbo(1);
     cube_vbo.gen();
     Vao cube_vao(1);
     cube_vao.gen();
     Renderer cube_renderer(cube_vao, cube_vbo, cube, false);
 
-    Object3D rabbit_high = loadOBJ("../models/rabbit_high.obj");
+    Object3D rabbit_high = load_obj("../models/rabbit_high.obj");
     Vbo boids_highpoly_vbo(2);
     boids_highpoly_vbo.gen();
     Vao vao_highpoly(1);
     vao_highpoly.gen();
     Renderer boids_highpoly_renderer(vao_highpoly, boids_highpoly_vbo, rabbit_high, true);
 
-    Object3D swan = loadOBJ("../models/swan.obj");
+    Object3D swan = load_obj("../models/swan.obj");
     Vbo swan_vbo(1);
     swan_vbo.gen();
     Vao swan_vao(1);
@@ -88,20 +88,20 @@ int main()
     Force alignement(params._multiplicator_alignement); //Tendance à former des gros groupes facilement
     Force centering(params._multiplicator_centering); //Tendance à diminuer le rayon d'un groupe de boid
 
-    globalMatrix gm;
+    GlobalMatrix gm;
     
     uGlobalMatrix ugm;
-    getUniformLocations(true, shader, ugm);
+    get_uniform_locations(true, shader, ugm);
 
     uGlobalMatrix cube_ugm;
-    getUniformLocations(false, draw_shader, cube_ugm);
+    get_uniform_locations(false, draw_shader, cube_ugm);
 
     uGlobalMatrix swan_ugm;
-    getUniformLocations(false, draw_shader, swan_ugm);
+    get_uniform_locations(false, draw_shader, swan_ugm);
 
-    texture boids_texture("../textures/Rabbit_texture.png");
-    texture cube_texture("../textures/cube_texture.png");
-    texture swan_texture("../textures/swan_texture.png");
+    Texture boids_texture("../textures/Rabbit_texture.png");
+    Texture cube_texture("../textures/cube_texture.png");
+    Texture swan_texture("../textures/swan_texture.png");
     GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
 
     light point_1(glm::vec3(0,0,0), glm::vec3(500, 500, 500));
@@ -127,39 +127,33 @@ int main()
     ctx.update = [&]() {
         ctx.background(p6::Color(0.2,0.4,0.6));
         ctx.square(p6::Center{}, p6::Radius{1.f});
-        gm.ProjMatrix = glm::perspective(glm::radians(56.f), ctx.aspect_ratio(), 0.1f, 200.f);
+        gm.proj_matrix = glm::perspective(glm::radians(56.f), ctx.aspect_ratio(), 0.1f, 200.f);
 
         if (ctx.key_is_pressed(GLFW_KEY_LEFT)) {
-            //camera.moveLeft(1.f);
             player.move_right(-ctx.delta_time());
         }
         if (ctx.key_is_pressed(GLFW_KEY_RIGHT)) {
-            //camera.moveLeft(-1.f);
             player.move_right(ctx.delta_time());
         }
         if (ctx.key_is_pressed(GLFW_KEY_UP)) {
-            //camera.moveFront(1.f);
             player.move_front(-ctx.delta_time());
         }
         if (ctx.key_is_pressed(GLFW_KEY_DOWN)) {
-            //camera.moveFront(-1.f);
             player.move_front(ctx.delta_time());
         }
         if (ctx.key_is_pressed(GLFW_KEY_U)) {
-            //camera.moveFront(-1.f);
             player.move_up(ctx.delta_time());
         }
         if (ctx.key_is_pressed(GLFW_KEY_D)) {
-            //camera.moveFront(-1.f);
             player.move_up(-ctx.delta_time());
         }
         if (ctx.mouse_button_is_pressed(p6::Button::Left)) {
-            camera.rotateLeft(-50.f * ctx.mouse_delta().x);
-            camera.rotateUp(-50.f * ctx.mouse_delta().y);
+            camera.rotate_left(-50.f * ctx.mouse_delta().x);
+            camera.rotate_up(-50.f * ctx.mouse_delta().y);
         }
-        gm.ViewMatrix = camera.getViewMatrix(player.get_position());
+        gm.view_matrix = camera.get_view_matrix(player.get_position());
         point_1.set_position(player.get_position());
-        light_positions[0] = gm.ViewMatrix * glm::vec4(point_1.get_position(), 1);
+        light_positions[0] = gm.view_matrix * glm::vec4(point_1.get_position(), 1);
         
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
         glEnable(GL_DEPTH_TEST); //Checks if the fragment has to be rendered based on it's z value
@@ -167,14 +161,14 @@ int main()
         //pour les bouts de code comme ça peut être faire en dehors de la classe des fonctions pour chaque cas particulier car c'est un peu chiant sinon
         //Drawing the cube
         draw_shader.use();
-        matricesCube(gm, cube_ugm);
+        matrices_cube(gm, cube_ugm);
         glBindTexture(GL_TEXTURE_2D, cube_texture.texture_id); 
         glUniform1i(uTexture, 0);
 
         get_uniforms(draw_shader, l_uniforms);
         set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
 
-        cube_renderer.drawClassic();
+        cube_renderer.draw_classic();
 
         //draw the swan
         matricesSwan(gm, swan_ugm, player);
@@ -183,27 +177,27 @@ int main()
         get_uniforms(draw_shader, l_uniforms);
         set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
 
-        swan_renderer.drawClassic();
+        swan_renderer.draw_classic();
 
         flock.update(ctx.delta_time(), 1, params);
         
-        std::vector<glm::mat4> instanc_matrix(params._boids_number);
+        std::vector<glm::mat4> instance_mv_matrix(params._boids_number);
         std::vector<Boid> e = flock.get_boids();  
         for(size_t i = 0; i<params._boids_number; i++) {
-            instanc_matrix[i] = translate(e[i].get_position().x, e[i].get_position().y, e[i].get_position().z);
-            instanc_matrix[i] =  instanc_matrix[i] * scale(1, 1, 1);
-            instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::acos(glm::dot(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity()))), glm::cross(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity())));
-            instanc_matrix[i] = gm.ViewMatrix * instanc_matrix[i];
+            instance_mv_matrix[i] = translate(e[i].get_position().x, e[i].get_position().y, e[i].get_position().z);
+            instance_mv_matrix[i] =  instance_mv_matrix[i] * scale(1, 1, 1);
+            instance_mv_matrix[i] = glm::rotate(instance_mv_matrix[i], glm::acos(glm::dot(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity()))), glm::cross(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity())));
+            instance_mv_matrix[i] = gm.view_matrix * instance_mv_matrix[i];
         }
 
         if(LOD == 0){
             boids_vbo.bind(1);
-            glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::mat4), instanc_matrix.data(), GL_DYNAMIC_READ); 
+            glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::mat4), instance_mv_matrix.data(), GL_DYNAMIC_READ); 
             boids_vbo.unbind();
         }
         else {
             boids_highpoly_vbo.bind(1);
-            glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::mat4), instanc_matrix.data(), GL_DYNAMIC_READ); 
+            glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::mat4), instance_mv_matrix.data(), GL_DYNAMIC_READ); 
             boids_highpoly_vbo.unbind();
         }
 
@@ -212,7 +206,7 @@ int main()
         
         for(size_t i = 0; i<params._boids_number; i++)
         {
-            matricesBoids(gm, ugm, instanc_matrix[i]);
+            matrices_boids(gm, ugm, instance_mv_matrix[i]);
         }
         glBindTexture(GL_TEXTURE_2D, boids_texture.texture_id);
         glUniform1i(uTexture, 0);

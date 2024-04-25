@@ -21,6 +21,6 @@ struct Object3D{
     Object3D() = default;
 };
 
-Object3D loadOBJ(
+Object3D load_obj(
     const char * path
 );
