@@ -3,35 +3,35 @@
 #include "glm/ext/quaternion_transform.hpp"
 #include "glm/fwd.hpp"
 
-void matricesCube(globalMatrix &gm, uGlobalMatrix &ugm)
+void matrices_cube(GlobalMatrix &gm, uGlobalMatrix &ugm)
 {
     gm.MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0,0,0));
     gm.MVMatrix = glm::scale(gm.MVMatrix, glm::vec3(15,15,15));
     gm.NormalMatrix = glm::transpose(glm::inverse(gm.MVMatrix));
-    glUniformMatrix4fv(ugm.uMVMatrix, 1, GL_FALSE, glm::value_ptr(gm.ViewMatrix * gm.MVMatrix));
+    glUniformMatrix4fv(ugm.uMVMatrix, 1, GL_FALSE, glm::value_ptr(gm.view_matrix * gm.MVMatrix));
     glUniformMatrix4fv(ugm.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(gm.NormalMatrix));
-    glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.ProjMatrix * gm.ViewMatrix * gm.MVMatrix));
+    glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.proj_matrix * gm.view_matrix * gm.MVMatrix));
 }
 
-void matricesSwan(globalMatrix &gm, uGlobalMatrix &ugm, Arpenteur player)
+void matricesSwan(GlobalMatrix &gm, uGlobalMatrix &ugm, Arpenteur player)
 {
     gm.MVMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(player.get_position()));
     gm.MVMatrix = glm::scale(gm.MVMatrix, glm::vec3(0.25,0.25,0.25));
     gm.NormalMatrix = glm::transpose(glm::inverse(gm.MVMatrix));
-    glUniformMatrix4fv(ugm.uMVMatrix, 1, GL_FALSE, glm::value_ptr(gm.ViewMatrix * gm.MVMatrix));
+    glUniformMatrix4fv(ugm.uMVMatrix, 1, GL_FALSE, glm::value_ptr(gm.view_matrix * gm.MVMatrix));
     glUniformMatrix4fv(ugm.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(gm.NormalMatrix));
-    glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.ProjMatrix * gm.ViewMatrix * gm.MVMatrix));
+    glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.proj_matrix * gm.view_matrix * gm.MVMatrix));
 }
 
-void matricesBoids(globalMatrix &gm, uGlobalMatrix &ugm, glm::mat4 model_matrix) 
+void matrices_boids(GlobalMatrix &gm, uGlobalMatrix &ugm, glm::mat4 model_matrix) 
 {
     gm.NormalMatrix = glm::transpose(glm::inverse(model_matrix));
     
     glUniformMatrix4fv(ugm.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(gm.NormalMatrix));
-    glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.ProjMatrix));
+    glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.proj_matrix));
 }
 
-void getUniformLocations(const bool instancing, const p6::Shader &shader, uGlobalMatrix &ugm) 
+void get_uniform_locations(const bool instancing, const p6::Shader &shader, uGlobalMatrix &ugm) 
 {
     ugm.uNormalMatrix = glGetUniformLocation(shader.id(), "uNormalMatrix");
     ugm.uMVPMatrix = glGetUniformLocation(shader.id(), "uMVPMatrix");

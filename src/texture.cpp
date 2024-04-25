@@ -2,7 +2,7 @@
 #include <memory>
 #include "img/src/Image.h"
 
-texture::texture(const char* path)
+Texture::Texture(const char* path)
 {
     auto texture_ptr = p6::load_image_buffer(path);
     glGenTextures(1, &this->texture_id);

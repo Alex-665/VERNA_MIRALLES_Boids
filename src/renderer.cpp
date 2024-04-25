@@ -45,7 +45,7 @@ void Renderer::setupAttribArray(const bool instanced)
     m_vao.unbind();
 }
 
-void Renderer::drawClassic()
+void Renderer::draw_classic()
 {
     m_vao.bind();
     glDrawArrays(GL_TRIANGLES, 0, m_object.vertices.size());
