@@ -29,7 +29,7 @@ void computeEvolution(Flock &flock, const p6::Context &ctx, float &birth_time, f
     flock.add_boid(tmp);
     n++;
     birth_time = exponentialLaw(0.1f); 
-    if (birth_time < 1) birth_time += 2.f; //To avoid dividing by 0
+    if (birth_time < 2) birth_time += 2.f; //To avoid dividing by 0 and taking a modulo 1
     std::cout << "birth time : " <<birth_time << "\n";
   }
   if((int)(ctx.time()) % (int)(death_time) == 0 &&  ((int)(ctx.time() - ctx.delta_time()) % (int)death_time) != 0)
@@ -37,7 +37,7 @@ void computeEvolution(Flock &flock, const p6::Context &ctx, float &birth_time, f
     flock.remove_boid();
     n--;
     death_time = exponentialLaw(0.09f);
-    if(death_time < 1) death_time += 2.f; //To avoid dividing by 0
+    if(death_time < 2) death_time += 2.f; //To avoid dividing by 0 and taking a modulo 1
     std::cout << "death time " << death_time << "\n";
     }
 }
