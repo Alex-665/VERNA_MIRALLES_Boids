@@ -1,18 +1,13 @@
 #include "boid.hpp"
+#include "probas.hpp"
 #include "force.hpp"
-#include "glm/geometric.hpp"
 
 // static constexpr vitesse_max = 1;
-    float my_rand01()
-    {
-        float randomNumber = 2 * (float)rand() / (float)RAND_MAX - 1;
-        return randomNumber;
-    }
     Boid::Boid()
     {
-        m_position = glm::vec3(my_rand01(), my_rand01(), my_rand01());  
-        m_vitesse =  glm::vec3(my_rand01(), my_rand01(), my_rand01()); 
-        m_acceleration = glm::vec3(my_rand01(), my_rand01(), my_rand01());
+        m_position = glm::vec3(normal_law(10), normal_law(10), normal_law(10));  
+        m_vitesse =  glm::vec3(rand01(), rand01(), rand01()); 
+        m_acceleration = glm::vec3(rand01(), rand01(), rand01());
         m_vitesse_max = 10.f;
     }
     glm::vec3 Boid::get_position() const

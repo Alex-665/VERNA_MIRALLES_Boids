@@ -78,7 +78,7 @@ int main()
     swan_vao.gen();
     Renderer swan_renderer(swan_vao, swan_vbo, swan, false);
 
-    Flock flock = Flock();
+    Flock flock;
     for(int i = 0 ; i < params._boids_number ; i++)
     {
         Boid tmp;
