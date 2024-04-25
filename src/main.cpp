@@ -104,8 +104,8 @@ int main()
     Texture swan_texture("../textures/swan_texture.png");
     GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
 
-    light point_1(glm::vec3(0,0,0), glm::vec3(500, 500, 500));
-    light point_2(glm::vec3(0,0,0), glm::vec3(50,35,10));
+    light point_1(glm::vec3(0,0,0), glm::vec3(200, 150, 150));
+    light point_2(glm::vec3(0,0,0), glm::vec3(150,100,50));
 
     glm::vec4 light_positions[] = {
         glm::vec4(point_1.get_position(),1),
@@ -137,6 +137,7 @@ int main()
         gm.view_matrix = camera.get_view_matrix(player.get_position());
         point_1.set_position(player.get_position());
         light_positions[0] = gm.view_matrix * glm::vec4(point_1.get_position(), 1);
+        light_positions[1] = gm.view_matrix * glm::vec4(point_2.get_position(), 1);
         
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
         glEnable(GL_DEPTH_TEST); //Checks if the fragment has to be rendered based on it's z value
