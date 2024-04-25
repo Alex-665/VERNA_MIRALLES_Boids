@@ -28,12 +28,16 @@ void computeEvolution(Flock &flock, const p6::Context &ctx, float &birth_time, f
     Boid tmp;
     flock.add_boid(tmp);
     p._boids_number ++;
-    birth_time = exponentialLaw(0.1f);
+    birth_time = exponentialLaw(0.1f); 
+    if (birth_time < 1) birth_time += 1.f; //To avoid dividing by 0
+    std::cout << "birth time : " <<birth_time << "\n";
   }
   if((int)(ctx.time()) % (int)(death_time) == 0 &&  ((int)(ctx.time() - ctx.delta_time()) % (int)death_time) != 0)
   {
     flock.remove_boid();
     p._boids_number --;
     death_time = exponentialLaw(0.09f);
-  }
+    if(death_time < 1) death_time += 1.f; //To avoid dividing by 0
+    std::cout << "death time " << death_time << "\n";
+    }
 }
