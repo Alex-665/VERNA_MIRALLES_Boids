@@ -2,7 +2,7 @@
 #include "p6/p6.h"
 #include "boid.hpp"
 
-class Force { //Pas besoin de la classe
+class Force {
     private:
         glm::vec3 m_value;
         float m_multiplicator = 1;

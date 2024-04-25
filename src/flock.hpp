@@ -15,9 +15,9 @@ class Flock
 {
     private:
     std::vector<Boid> boids;
-    float avoidance_multiplicator{10.f}; //Tendance à augmenter la distance inter-boids
-    float alignement_multiplicator{1.f}; //Tendance à former des gros groupes facilement
-    float centering_multiplicator{3.f}; //Tendance à diminuer le rayon d'un groupe de boid
+    float avoidance_multiplicator{10.f}; //Increase inter-boids gap
+    float alignement_multiplicator{1.f}; //Form big groups of boids
+    float centering_multiplicator{3.f}; //Shorten the diameter of a group of boids
 
     public:
     Flock(): boids(0){};
@@ -39,5 +39,5 @@ class Flock
     void compute_avoidance(Force &f);
     void compute_aligement(Force &f);
     void compute_centering(Force &f);
-    glm::vec3 compute_forces(std::vector<Boid> boids, float avoidance_multiplicator, float alignement_multiplicator, float centering_multiplicator); //Cette fonction nous permet de parcourir tous les boids 1 fois en tout au lieu de 1 fois par force
+    glm::vec3 compute_forces(std::vector<Boid> boids, float avoidance_multiplicator, float alignement_multiplicator, float centering_multiplicator); //Run through all boids one time instead of one time per force
 };
