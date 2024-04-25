@@ -1,16 +1,10 @@
 #define DOCTEST_CONFIG_IMPLEMENT
-#include "doctest/doctest.h"
 #include <imgui.h>
 #include <cstddef>
 #include <cstdlib>
 #include <vector>
-#include "glm/fwd.hpp"
 #include "glm/trigonometric.hpp"
 #include "probas.hpp"
-#include "flock.hpp"
-#include "boid.hpp"
-#include "force.hpp"
-#include "loader.h"
 #include <iostream>
 #include "vao.hpp"
 #include "vbo.hpp"
@@ -20,7 +14,6 @@
 #include "light.hpp"
 #include "renderer.hpp"
 #include "freeflyCamera.hpp"
-#include "arpenteur.hpp"
 #include "GLFW/glfw3.h"
 
 int main()
@@ -127,6 +120,8 @@ int main()
     material_params mat_params(glm::vec3(1,1,1), glm::vec3(1,1,1), 1);
 
     Arpenteur player;
+    float birth_time{2.f};
+    float death_time{2.f};
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
@@ -198,6 +193,7 @@ int main()
             instanc_matrix[i] = translate(e[i].get_position().x, e[i].get_position().y, e[i].get_position().z);
             instanc_matrix[i] =  instanc_matrix[i] * scale(1, 1, 1);
             instanc_matrix[i] = glm::rotate(instanc_matrix[i], glm::acos(glm::dot(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity()))), glm::cross(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity())));
+            instanc_matrix[i] = gm.ViewMatrix * instanc_matrix[i];
         }
 
         if(LOD == 0){
@@ -249,10 +245,9 @@ int main()
             }
             etat.nextState();
         }
+        computeEvolution(flock, ctx, birth_time, death_time, params._boids_number);
     };
 
     // Should be done last. It starts the infinite loop.
     ctx.start();
-
-    //normalement ici les boids_vbo et vao sont détruits automatiquement par les destructeurs désignés
 }

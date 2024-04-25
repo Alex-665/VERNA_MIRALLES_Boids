@@ -1,7 +1,6 @@
 #pragma once
 
 #include "p6/p6.h"
-#include "boid.hpp"
 #include "force.hpp"
 #include <vector>
 

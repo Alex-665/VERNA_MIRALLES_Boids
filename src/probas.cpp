@@ -21,23 +21,23 @@ int poissonLaw(float lambda)
   return nb_essais - 1;
 }
 
-void computeEvolution(Flock &flock, const p6::Context &ctx, float &birth_time, float &death_time, parameters &p)
+void computeEvolution(Flock &flock, const p6::Context &ctx, float &birth_time, float &death_time, int &n)
 {
   if((int)(ctx.time()) % (int)(birth_time) == 0 &&  ((int)(ctx.time() - ctx.delta_time()) % (int)birth_time) != 0)
   {
     Boid tmp;
     flock.add_boid(tmp);
-    p._boids_number ++;
+    n++;
     birth_time = exponentialLaw(0.1f); 
-    if (birth_time < 1) birth_time += 1.f; //To avoid dividing by 0
+    if (birth_time < 1) birth_time += 2.f; //To avoid dividing by 0
     std::cout << "birth time : " <<birth_time << "\n";
   }
   if((int)(ctx.time()) % (int)(death_time) == 0 &&  ((int)(ctx.time() - ctx.delta_time()) % (int)death_time) != 0)
   {
     flock.remove_boid();
-    p._boids_number --;
+    n--;
     death_time = exponentialLaw(0.09f);
-    if(death_time < 1) death_time += 1.f; //To avoid dividing by 0
+    if(death_time < 1) death_time += 2.f; //To avoid dividing by 0
     std::cout << "death time " << death_time << "\n";
     }
 }

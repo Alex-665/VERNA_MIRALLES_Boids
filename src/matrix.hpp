@@ -1,6 +1,5 @@
 #pragma once
 #include "freeflyCamera.hpp"
-#include "arpenteur.hpp"
 #include "p6/p6.h"
 #include "include_glm.hpp"
 #include "boid.hpp"
