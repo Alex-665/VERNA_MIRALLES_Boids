@@ -1,7 +1,6 @@
 #pragma once
 #include "p6/p6.h"
 #include "include_glm.hpp"
-#include "arpenteur.hpp"
 
 class FreeflyCamera {
     private:

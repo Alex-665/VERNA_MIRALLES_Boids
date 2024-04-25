@@ -3,6 +3,7 @@
 #include "p6/p6.h"
 #include "include_glm.hpp"
 #include "boid.hpp"
+#include "arpenteur.hpp"
 
 struct GlobalMatrix {
     glm::mat4 MVMatrix;

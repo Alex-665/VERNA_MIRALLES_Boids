@@ -129,28 +129,11 @@ int main()
         ctx.square(p6::Center{}, p6::Radius{1.f});
         gm.proj_matrix = glm::perspective(glm::radians(56.f), ctx.aspect_ratio(), 0.1f, 200.f);
 
-        if (ctx.key_is_pressed(GLFW_KEY_LEFT)) {
-            player.move_right(-ctx.delta_time());
-        }
-        if (ctx.key_is_pressed(GLFW_KEY_RIGHT)) {
-            player.move_right(ctx.delta_time());
-        }
-        if (ctx.key_is_pressed(GLFW_KEY_UP)) {
-            player.move_front(-ctx.delta_time());
-        }
-        if (ctx.key_is_pressed(GLFW_KEY_DOWN)) {
-            player.move_front(ctx.delta_time());
-        }
-        if (ctx.key_is_pressed(GLFW_KEY_U)) {
-            player.move_up(ctx.delta_time());
-        }
-        if (ctx.key_is_pressed(GLFW_KEY_D)) {
-            player.move_up(-ctx.delta_time());
-        }
-        if (ctx.mouse_button_is_pressed(p6::Button::Left)) {
-            camera.rotate_left(-50.f * ctx.mouse_delta().x);
-            camera.rotate_up(-50.f * ctx.mouse_delta().y);
-        }
+        player.move_third_person(ctx, camera);
+        //if (ctx.mouse_button_is_pressed(p6::Button::Left)) {
+        //    camera.rotate_left(-50.f * ctx.mouse_delta().x);
+        //    camera.rotate_up(-50.f * ctx.mouse_delta().y);
+        //}
         gm.view_matrix = camera.get_view_matrix(player.get_position());
         point_1.set_position(player.get_position());
         light_positions[0] = gm.view_matrix * glm::vec4(point_1.get_position(), 1);
