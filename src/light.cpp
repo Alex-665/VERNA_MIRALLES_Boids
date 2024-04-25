@@ -1,7 +1,7 @@
 #include "light.hpp"
 #include <vector>
 
-void get_uniforms(const p6::Shader &shader, light_uniforms &l_u)
+void get_uniforms(const p6::Shader &shader, LightUniforms &l_u)
 {
     l_u.m_uKd = glGetUniformLocation(shader.id(), "uKd");
     l_u.m_uKs = glGetUniformLocation(shader.id(), "uKs");
@@ -10,7 +10,7 @@ void get_uniforms(const p6::Shader &shader, light_uniforms &l_u)
     l_u.m_uLightIntensity = glGetUniformLocation(shader.id(), "uLightIntensity");
 }
 
-void set_uniforms(const light_uniforms l_u, const material_params m_p, glm::vec4 light_positions[], glm::vec3 light_intensities[])
+void set_uniforms(const LightUniforms l_u, const MaterialParams m_p, glm::vec4 light_positions[], glm::vec3 light_intensities[])
 {
     glUniform3fv(l_u.m_uKd, 1, glm::value_ptr(m_p.m_uKd)); //Uniform values for lighting
     glUniform3fv(l_u.m_uKs, 1, glm::value_ptr(m_p.m_uKs));

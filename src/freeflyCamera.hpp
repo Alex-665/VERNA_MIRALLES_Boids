@@ -24,4 +24,5 @@ class FreeflyCamera {
         inline glm::vec3 get_up_vector() {return m_up_vector;};
         inline float get_phi() {return m_phi;};
         inline float get_tetha() {return m_theta;};
+        inline void add_distance(float dm) {m_distance += dm;}
 };

@@ -5,5 +5,6 @@ class Texture
 {
     public:
     GLuint texture_id;
+    GLint u_texture;
     Texture(const char* path);
 };

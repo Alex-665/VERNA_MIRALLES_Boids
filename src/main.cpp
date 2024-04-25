@@ -39,13 +39,14 @@ int main()
         ImGui::Text("Etat : %s", etat_string.c_str());
         ImGui::End();
     };
+
     srand(static_cast<unsigned int>(time(NULL))); // Initialize random seed
 
-    const p6::Shader shader(std::string("#version 330 core\n") + std::string("#define INSTANCING\n") + file_content("src/shaders/red.vs.glsl"), file_content("src/shaders/point_light.fs.glsl"));
+    //Definitions of useful variables
+    const p6::Shader instanced_shader(std::string("#version 330 core\n") + std::string("#define INSTANCING\n") + file_content("src/shaders/red.vs.glsl"), file_content("src/shaders/point_light.fs.glsl"));
 
-    const p6::Shader draw_shader(std::string("#version 330 core\n") + file_content("src/shaders/red.vs.glsl"), file_content("src/shaders/point_light.fs.glsl"));
+    const p6::Shader classic_shader(std::string("#version 330 core\n") + file_content("src/shaders/red.vs.glsl"), file_content("src/shaders/point_light.fs.glsl"));
     
-    // HERE IS THE INITIALIZATION CODE
     MarkovChain etat(glm::vec3(1,0,0), glm::mat3(glm::vec3(0.75, 0.20, 0.05), glm::vec3(0.25, 0.5, 0.25), glm::vec3(0.05, 0.35, 0.6)));
 
     FreeflyCamera camera;
@@ -55,28 +56,28 @@ int main()
     boids_vbo.gen();
     Vao vao(1);
     vao.gen();
-    Renderer boids_renderer(vao, boids_vbo, rabbit, true);
+    Renderer boids_renderer(vao, boids_vbo, rabbit, instanced_shader, true);
 
     Object3D cube = load_obj("../models/cube.obj");
     Vbo cube_vbo(1);
     cube_vbo.gen();
     Vao cube_vao(1);
     cube_vao.gen();
-    Renderer cube_renderer(cube_vao, cube_vbo, cube, false);
+    Renderer cube_renderer(cube_vao, cube_vbo, cube, classic_shader, false);
 
     Object3D rabbit_high = load_obj("../models/rabbit_high.obj");
     Vbo boids_highpoly_vbo(2);
     boids_highpoly_vbo.gen();
     Vao vao_highpoly(1);
     vao_highpoly.gen();
-    Renderer boids_highpoly_renderer(vao_highpoly, boids_highpoly_vbo, rabbit_high, true);
+    Renderer boids_highpoly_renderer(vao_highpoly, boids_highpoly_vbo, rabbit_high, instanced_shader, true);
 
     Object3D swan = load_obj("../models/swan.obj");
     Vbo swan_vbo(1);
     swan_vbo.gen();
     Vao swan_vao(1);
     swan_vao.gen();
-    Renderer swan_renderer(swan_vao, swan_vbo, swan, false);
+    Renderer swan_renderer(swan_vao, swan_vbo, swan, classic_shader, false);
 
     Flock flock(params._boids_number);
 
@@ -86,22 +87,23 @@ int main()
 
     GlobalMatrix gm;
     
-    uGlobalMatrix ugm;
-    get_uniform_locations(true, shader, ugm);
-
+    uGlobalMatrix boids_ugm;
+    get_uniform_locations(true, instanced_shader, boids_ugm);
     uGlobalMatrix cube_ugm;
-    get_uniform_locations(false, draw_shader, cube_ugm);
-
+    get_uniform_locations(false, classic_shader, cube_ugm);
     uGlobalMatrix swan_ugm;
-    get_uniform_locations(false, draw_shader, swan_ugm);
+    get_uniform_locations(false, classic_shader, swan_ugm);
 
     Texture boids_texture("../textures/Rabbit_texture.png");
     Texture cube_texture("../textures/cube_texture.png");
     Texture swan_texture("../textures/swan_texture.png");
-    GLint uTexture = glGetUniformLocation(shader.id(), "uTexture");
+    GLint uTexture = glGetUniformLocation(instanced_shader.id(), "uTexture");
+    boids_texture.u_texture = uTexture; 
+    cube_texture.u_texture = uTexture; 
+    swan_texture.u_texture = uTexture; 
 
-    light point_1(glm::vec3(0,0,0), glm::vec3(200, 150, 150));
-    light point_2(glm::vec3(0,0,0), glm::vec3(150,100,50));
+    Light point_1(glm::vec3(0,0,0), glm::vec3(200, 150, 150));
+    Light point_2(glm::vec3(0,0,0), glm::vec3(150,100,50));
 
     glm::vec4 light_positions[] = {
         glm::vec4(point_1.get_position(),1),
@@ -112,20 +114,20 @@ int main()
         point_2.get_intensity()
     };
 
-    light_uniforms l_uniforms;
-    material_params mat_params(glm::vec3(1,1,1), glm::vec3(1,1,1), 1);
+    LightUniforms l_uniforms;
+    MaterialParams mat_params(glm::vec3(1,1,1), glm::vec3(1,1,1), 1);
 
     Arpenteur player;
     float birth_time{2.f};
     float death_time{2.f};
 
-    // Declare your infinite update loop.
     ctx.update = [&]() {
         ctx.background(p6::Color(0.2,0.4,0.6));
         ctx.square(p6::Center{}, p6::Radius{1.f});
         gm.proj_matrix = glm::perspective(glm::radians(56.f), ctx.aspect_ratio(), 0.1f, 200.f);
 
         player.move_third_person(ctx, camera);
+
         gm.view_matrix = camera.get_view_matrix(player.get_position());
         point_1.set_position(player.get_position());
         light_positions[0] = gm.view_matrix * glm::vec4(point_1.get_position(), 1);
@@ -134,26 +136,16 @@ int main()
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
         glEnable(GL_DEPTH_TEST); //Checks if the fragment has to be rendered based on it's z value
 
-        //pour les bouts de code comme ça peut être faire en dehors de la classe des fonctions pour chaque cas particulier car c'est un peu chiant sinon
-        //Drawing the cube
-        draw_shader.use();
+        //Draw the cube and swan
+        classic_shader.use();
+
         matrices_cube(gm, cube_ugm);
-        glBindTexture(GL_TEXTURE_2D, cube_texture.texture_id); 
-        glUniform1i(uTexture, 0);
+        cube_renderer.set_matrix(gm, cube_ugm);
+        cube_renderer.draw_classic(cube_texture, l_uniforms, mat_params, light_positions, light_intensities);
 
-        get_uniforms(draw_shader, l_uniforms);
-        set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
-
-        cube_renderer.draw_classic();
-
-        //draw the swan
-        matricesSwan(gm, swan_ugm, player);
-        glBindTexture(GL_TEXTURE_2D, swan_texture.texture_id);
-
-        get_uniforms(draw_shader, l_uniforms);
-        set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
-
-        swan_renderer.draw_classic();
+        matrices_swan(gm, swan_ugm, player);
+        swan_renderer.set_matrix(gm, swan_ugm);
+        swan_renderer.draw_classic(swan_texture, l_uniforms, mat_params, light_positions, light_intensities);
 
         flock.update(ctx.delta_time(), 1, params);
         
@@ -177,21 +169,22 @@ int main()
             boids_highpoly_vbo.unbind();
         }
 
-        //draw boids
-        shader.use();
+        //Draw the boids
+        instanced_shader.use();
         
         for(size_t i = 0; i<params._boids_number; i++)
         {
-            matrices_boids(gm, ugm, instance_mv_matrix[i]);
+            matrices_boids(gm, boids_ugm, instance_mv_matrix[i]);
         }
-        glBindTexture(GL_TEXTURE_2D, boids_texture.texture_id);
-        glUniform1i(uTexture, 0);
 
-        get_uniforms(shader, l_uniforms);
-        set_uniforms(l_uniforms, mat_params, light_positions, light_intensities);
-
-        if(LOD == 0) boids_renderer.drawInstanced(params._boids_number);
-        else boids_highpoly_renderer.drawInstanced(params._boids_number);
+        if(LOD == 0) {
+            boids_renderer.set_matrix(gm, boids_ugm);
+            boids_renderer.drawInstanced(boids_texture, l_uniforms, mat_params, light_positions, light_intensities, params._boids_number);
+        }
+        else {
+            boids_highpoly_renderer.set_matrix(gm, boids_ugm);
+            boids_highpoly_renderer.drawInstanced(boids_texture, l_uniforms, mat_params, light_positions, light_intensities, params._boids_number);
+        }
 
         glClear(GL_DEPTH_BUFFER_BIT);  
 

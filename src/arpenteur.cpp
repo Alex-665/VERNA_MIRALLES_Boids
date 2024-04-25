@@ -38,6 +38,12 @@ void Arpenteur::move_third_person(const p6::Context &ctx, FreeflyCamera &camera)
     if (ctx.key_is_pressed(GLFW_KEY_D)) {
         move_up(-ctx.delta_time());
     }
+    if(ctx.key_is_pressed(GLFW_KEY_KP_ADD)) {
+        camera.add_distance(-1);
+    }
+    if(ctx.key_is_pressed(GLFW_KEY_KP_SUBTRACT)) {
+        camera.add_distance(1);
+    }
     if (ctx.mouse_button_is_pressed(p6::Button::Left)) {
         camera.rotate_left(-50.f * ctx.mouse_delta().x);
         camera.rotate_up(-50.f * ctx.mouse_delta().y);
