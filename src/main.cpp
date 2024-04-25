@@ -78,12 +78,8 @@ int main()
     swan_vao.gen();
     Renderer swan_renderer(swan_vao, swan_vbo, swan, false);
 
-    Flock flock = Flock();
-    for(int i = 0 ; i < params._boids_number ; i++)
-    {
-        Boid tmp;
-        flock.add_boid(tmp);
-    }
+    Flock flock(params._boids_number);
+
     Force avoidance(params._multiplicator_avoidance); //Tendance à augmenter la distance inter-boids
     Force alignement(params._multiplicator_alignement); //Tendance à former des gros groupes facilement
     Force centering(params._multiplicator_centering); //Tendance à diminuer le rayon d'un groupe de boid
