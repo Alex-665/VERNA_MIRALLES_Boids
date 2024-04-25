@@ -1,6 +1,7 @@
 #include "probas.hpp"
 #include "boid.hpp"
 #include "flock.hpp"
+#include "glm/ext/quaternion_exponential.hpp"
 
 double rand01() {
     thread_local std::default_random_engine gen{std::random_device{}()};
@@ -40,4 +41,9 @@ void computeEvolution(Flock &flock, const p6::Context &ctx, float &birth_time, f
     if(death_time < 2) death_time += 2.f; //To avoid dividing by 0 and taking a modulo 1
     std::cout << "death time " << death_time << "\n";
     }
+}
+double beta_law(float a, float b)
+{
+  float u = rand01();
+  return glm::pow(u, a-1) * glm::pow(1-u, b-1);
 }
