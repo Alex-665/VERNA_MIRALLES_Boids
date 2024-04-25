@@ -15,6 +15,6 @@ void set_uniforms(const light_uniforms l_u, const material_params m_p, glm::vec4
     glUniform3fv(l_u.m_uKd, 1, glm::value_ptr(m_p.m_uKd)); //Uniform values for lighting
     glUniform3fv(l_u.m_uKs, 1, glm::value_ptr(m_p.m_uKs));
     glUniform1f(l_u.m_uShininess, m_p.m_uShininess);
-    glUniform4fv(l_u.m_uLightPos, light_positions->length(), glm::value_ptr(light_positions[0]));
-    glUniform3fv(l_u.m_uLightIntensity, light_intensities->length(), glm::value_ptr(light_intensities[0]));
+    glUniform4fv(l_u.m_uLightPos, 2, glm::value_ptr(light_positions[0]));
+    glUniform3fv(l_u.m_uLightIntensity, 2, glm::value_ptr(light_intensities[0]));
 }
