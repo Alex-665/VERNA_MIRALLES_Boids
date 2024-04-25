@@ -28,7 +28,7 @@ void matricesBoids(globalMatrix &gm, uGlobalMatrix &ugm, glm::mat4 model_matrix)
     gm.NormalMatrix = glm::transpose(glm::inverse(model_matrix));
     
     glUniformMatrix4fv(ugm.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(gm.NormalMatrix));
-    glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.ProjMatrix * gm.ViewMatrix));
+    glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.ProjMatrix));
 }
 
 void getUniformLocations(const bool instancing, const p6::Shader &shader, uGlobalMatrix &ugm) 
