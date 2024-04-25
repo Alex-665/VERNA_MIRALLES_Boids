@@ -1,6 +1,7 @@
 #pragma once
 #include "glm/fwd.hpp"
 #include "freeflyCamera.hpp"
+#include "probas.hpp"
 
 class Arpenteur
 {
@@ -15,4 +16,5 @@ class Arpenteur
         void move_up(float dt);
         inline void set_speed(float s){m_speed = s;};
         void move_third_person(const p6::Context &ctx, FreeflyCamera &camera);
+        void shape_state(const p6::Context &ctx, MarkovChain &mc, std::string &s);
 };
