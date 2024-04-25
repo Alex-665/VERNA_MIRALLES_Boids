@@ -29,6 +29,9 @@ void Renderer::setupAttribArray(const bool instanced)
         glEnableVertexAttribArray(5);
         glEnableVertexAttribArray(6);
 
+        //to enable the boids random colour
+        glEnableVertexAttribArray(7);
+
         //way for the m_vao to read the matrix of transformation
         m_vbo.bind(1);
         glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(0 * sizeof(glm::vec4)));
@@ -40,6 +43,10 @@ void Renderer::setupAttribArray(const bool instanced)
         glVertexAttribDivisor(5, 1);
         glVertexAttribDivisor(6, 1);
         //
+        m_vbo.unbind();
+        m_vbo.bind(2);
+        glVertexAttribPointer(7, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (const GLvoid*)0);
+        glVertexAttribDivisor(7, 1);
         m_vbo.unbind();
     }
     m_vao.unbind();

@@ -30,6 +30,7 @@ class Boid
     inline glm::vec3 get_velocity() {return m_vitesse;};
     inline std::vector<GLfloat> get_vertex() {return vertex;};
     inline glm::vec3 get_direction(){return m_direction;};
+    inline glm::vec3 get_color_multiplicator() {return m_color;};
     void reset_acceleration();
     void ajouter_force(glm::vec3 force);
     void accelerer(float dt, glm::vec3 force);

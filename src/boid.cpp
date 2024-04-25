@@ -9,7 +9,7 @@
         m_vitesse =  glm::vec3(rand01(), rand01(), rand01()); 
         m_acceleration = glm::vec3(rand01(), rand01(), rand01());
         m_vitesse_max = 10.f;
-        m_color = glm::vec3(beta_law(1.1, 1), beta_law(1.1, 1), beta_law(1.1, 1));
+        m_color = glm::vec3(beta_law(1.5, 1), beta_law(1.5, 1), beta_law(1.5, 1));
     }
     glm::vec3 Boid::get_position() const
     {

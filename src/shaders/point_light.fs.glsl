@@ -3,6 +3,7 @@
 in vec2 vFragUV;
 in vec3 vFragPosition;
 in vec3 vFragNormal;
+in vec3 vFragColorMultiplicator;
 
 uniform sampler2D uTexture;
 
@@ -41,5 +42,5 @@ void main() {
     vec4 tmp = texture(uTexture, vFragUV);
     if (tmp.a < 0.1) discard;
     vec4 lightFactor = vec4(blinnPhongMulti(2),1);
-    fFragColor = lightFactor * tmp;
+    fFragColor = tmp * vec4(vFragColorMultiplicator, 1);
 };

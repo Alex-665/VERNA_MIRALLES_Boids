@@ -51,7 +51,7 @@ int main()
     FreeflyCamera camera;
 
     Object3D rabbit = load_obj("../models/rabbit.obj");
-    Vbo boids_vbo(2);
+    Vbo boids_vbo(3);
     boids_vbo.gen();
     Vao vao(1);
     vao.gen();
@@ -65,7 +65,7 @@ int main()
     Renderer cube_renderer(cube_vao, cube_vbo, cube, false);
 
     Object3D rabbit_high = load_obj("../models/rabbit_high.obj");
-    Vbo boids_highpoly_vbo(2);
+    Vbo boids_highpoly_vbo(3);
     boids_highpoly_vbo.gen();
     Vao vao_highpoly(1);
     vao_highpoly.gen();
@@ -158,12 +158,43 @@ int main()
         flock.update(ctx.delta_time(), 1, params);
         
         std::vector<glm::mat4> instance_mv_matrix(params._boids_number);
+        std::vector<glm::vec3> instance_color_multiplicator(params._boids_number);
         std::vector<Boid> e = flock.get_boids();  
         for(size_t i = 0; i<params._boids_number; i++) {
             instance_mv_matrix[i] = translate(e[i].get_position().x, e[i].get_position().y, e[i].get_position().z);
             instance_mv_matrix[i] =  instance_mv_matrix[i] * scale(1, 1, 1);
             instance_mv_matrix[i] = glm::rotate(instance_mv_matrix[i], glm::acos(glm::dot(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity()))), glm::cross(glm::normalize(e[i].get_direction()), glm::normalize(e[i].get_velocity())));
             instance_mv_matrix[i] = gm.view_matrix * instance_mv_matrix[i];
+            instance_color_multiplicator[i] = e[i].get_color_multiplicator();
+        }
+
+        if(LOD == 0){
+            boids_vbo.bind(1);
+            glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::mat4), instance_mv_matrix.data(), GL_DYNAMIC_READ); 
+            boids_vbo.unbind();
+            boids_vbo.bind(2);
+            glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::vec3), instance_color_multiplicator.data(), GL_DYNAMIC_READ);
+            boids_vbo.unbind();
+        }
+        else {
+            boids_highpoly_vbo.bind(1);
+            glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::mat4), instance_mv_matrix.data(), GL_DYNAMIC_READ); 
+            boids_highpoly_vbo.unbind();
+            boids_highpoly_vbo.bind(2);
+            glBufferData(GL_ARRAY_BUFFER, params._boids_number * sizeof(glm::vec3), instance_color_multiplicator.data(), GL_DYNAMIC_READ);
+            boids_highpoly_vbo.unbind();
+        }
+
+        //draw boids
+        shader.use();
+        
+        for(size_t i = 0; i<params._boids_number; i++)
+        for(const auto& e : flock.get_boids())
+        {
+            ctx.circle(
+                p6::Center{e.get_position()},
+                p6::Radius{0.02f}
+            );
         }
 
         if(LOD == 0){

@@ -26,7 +26,6 @@ void matricesSwan(GlobalMatrix &gm, uGlobalMatrix &ugm, Arpenteur player)
 void matrices_boids(GlobalMatrix &gm, uGlobalMatrix &ugm, glm::mat4 model_matrix) 
 {
     gm.NormalMatrix = glm::transpose(glm::inverse(model_matrix));
-    
     glUniformMatrix4fv(ugm.uNormalMatrix, 1, GL_FALSE, glm::value_ptr(gm.NormalMatrix));
     glUniformMatrix4fv(ugm.uMVPMatrix, 1, GL_FALSE, glm::value_ptr(gm.proj_matrix));
 }
