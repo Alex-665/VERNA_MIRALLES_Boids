@@ -18,7 +18,7 @@ class MarkovChain {
 };
 
 inline double uniformLaw() {return rand01();};
-inline double exponentialLaw(float lambda) {return (-1 / lambda) * std::log(rand01());};
-inline double normalLaw(float mean, float delta){return (1 / (delta*std::sqrt(2*glm::pi<float>()))) * std::exp(-1/2 * std::pow(((rand01()-mean)/delta),2));};
+inline double exponentialLaw(float lambda) {return (-1.f / lambda) * std::log(rand01());};
+inline double normalLaw(float mean, float delta){return (1.f / (delta*std::sqrt(2*glm::pi<float>()))) * std::exp(-0.5 * std::pow(((rand01()-mean)/delta),2));};
 void computeEvolution(Flock &flock, const p6::Context &ctx, float &birth_time, float &death_time, int &n);
 int poissonLaw(float lambda);
