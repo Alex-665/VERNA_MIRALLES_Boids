@@ -5,7 +5,7 @@
 
 class FreeflyCamera {
     private:
-        float m_distance{2.f};
+        float m_distance{10.f};
         float m_phi;
         float m_theta;
         glm::vec3 m_frontVector;

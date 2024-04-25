@@ -56,128 +56,34 @@ int main()
     MarkovChain etat(glm::vec3(1,0,0), glm::mat3(glm::vec3(0.75, 0.20, 0.05), glm::vec3(0.25, 0.5, 0.25), glm::vec3(0.05, 0.35, 0.6)));
 
     FreeflyCamera camera;
+
     Object3D rabbit = loadOBJ("../models/rabbit.obj");
     Vbo boids_vbo(2);
     boids_vbo.gen();
-    boids_vbo.bind(0);
-    glBufferData(GL_ARRAY_BUFFER, rabbit.vertices.size() * sizeof(vertex), rabbit.vertices.data(), GL_STATIC_DRAW);
-    boids_vbo.unbind();
+    Vao vao(1);
+    vao.gen();
+    Renderer boids_renderer(vao, boids_vbo, rabbit, true);
 
     Object3D cube = loadOBJ("../models/cube.obj");
     Vbo cube_vbo(1);
     cube_vbo.gen();
-    cube_vbo.bind(0);
-    glBufferData(GL_ARRAY_BUFFER, cube.vertices.size() * sizeof(vertex), cube.vertices.data(), GL_STATIC_DRAW);
+    Vao cube_vao(1);
+    cube_vao.gen();
+    Renderer cube_renderer(cube_vao, cube_vbo, cube, false);
 
     Object3D rabbit_high = loadOBJ("../models/rabbit_high.obj");
     Vbo boids_highpoly_vbo(2);
     boids_highpoly_vbo.gen();
-    boids_highpoly_vbo.bind(0);
-    glBufferData(GL_ARRAY_BUFFER, rabbit_high.vertices.size() * sizeof(vertex), rabbit_high.vertices.data(), GL_STATIC_DRAW);
-    boids_highpoly_vbo.unbind();
+    Vao vao_highpoly(1);
+    vao_highpoly.gen();
+    Renderer boids_highpoly_renderer(vao_highpoly, boids_highpoly_vbo, rabbit_high, true);
 
     Object3D swan = loadOBJ("../models/swan.obj");
     Vbo swan_vbo(1);
     swan_vbo.gen();
-    swan_vbo.bind(0);
-    glBufferData(GL_ARRAY_BUFFER, swan.vertices.size() * sizeof(vertex), swan.vertices.data(), GL_STATIC_DRAW);
-    swan_vbo.unbind();
-
-    Vao vao(1);
-    vao.gen();
-    vao.bind();
-    const GLuint VERTEX_ATTR_POSITION = 0;
-    const GLuint VERTEX_ATTR_NORMAL = 1;
-    const GLuint VERTEX_ATTR_TEXTURE = 2;
-    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
-    glEnableVertexAttribArray(VERTEX_ATTR_TEXTURE);
-    //to enable the four vec4 of the instancematrix
-    glEnableVertexAttribArray(3);
-    glEnableVertexAttribArray(4);
-    glEnableVertexAttribArray(5);
-    glEnableVertexAttribArray(6);
-
-    boids_vbo.bind(0);
-    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, position));
-    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, normal));
-    glVertexAttribPointer(VERTEX_ATTR_TEXTURE, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, uv));
-    boids_vbo.unbind();
-    //way for the vao to read the matrix of transformation
-    boids_vbo.bind(1);
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(0 * sizeof(glm::vec4)));
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(1 * sizeof(glm::vec4)));
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(2 * sizeof(glm::vec4)));
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(3 * sizeof(glm::vec4)));
-
-    glVertexAttribDivisor(3, 1);
-    glVertexAttribDivisor(4, 1);
-    glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(6, 1);
-    vao.unbind();
-
-    Vao vao_highpoly(1);
-    vao_highpoly.gen();
-    vao_highpoly.bind();
-    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
-    glEnableVertexAttribArray(VERTEX_ATTR_TEXTURE);
-    //to enable the four vec4 of the instancematrix
-    glEnableVertexAttribArray(3);
-    glEnableVertexAttribArray(4);
-    glEnableVertexAttribArray(5);
-    glEnableVertexAttribArray(6);
-
-    boids_highpoly_vbo.bind(0);
-    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, position));
-    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, normal));
-    glVertexAttribPointer(VERTEX_ATTR_TEXTURE, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, uv));
-    boids_highpoly_vbo.unbind();
-    //way for the vao_highpoly to read the matrix of transformation
-    boids_highpoly_vbo.bind(1);
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(0 * sizeof(glm::vec4)));
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(1 * sizeof(glm::vec4)));
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(2 * sizeof(glm::vec4)));
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const GLvoid*)(3 * sizeof(glm::vec4)));
-
-    glVertexAttribDivisor(3, 1);
-    glVertexAttribDivisor(4, 1);
-    glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(6, 1);
-    //
-    boids_highpoly_vbo.unbind();
-    vao_highpoly.unbind();
-
-    Vao cube_vao(1);
-    cube_vao.gen();
-    cube_vao.bind();
-    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
-    glEnableVertexAttribArray(VERTEX_ATTR_TEXTURE);
-
-    cube_vbo.bind(0);
-    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, position));
-    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, normal));
-    glVertexAttribPointer(VERTEX_ATTR_TEXTURE, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, uv));
-    cube_vbo.unbind();
-
     Vao swan_vao(1);
     swan_vao.gen();
-    swan_vao.bind();
-    glEnableVertexAttribArray(VERTEX_ATTR_POSITION);
-    glEnableVertexAttribArray(VERTEX_ATTR_NORMAL);
-    glEnableVertexAttribArray(VERTEX_ATTR_TEXTURE);
-
-    swan_vbo.bind(0);
-    glVertexAttribPointer(VERTEX_ATTR_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, position));
-    glVertexAttribPointer(VERTEX_ATTR_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, normal));
-    glVertexAttribPointer(VERTEX_ATTR_TEXTURE, 2, GL_FLOAT, GL_FALSE, sizeof(vertex), (const GLvoid*)offsetof(vertex, uv));
-    swan_vbo.unbind();
-
-    Renderer cube_renderer(cube_vao, cube);
-    Renderer boids_renderer(vao, rabbit);
-    Renderer boids_highpoly_renderer(vao_highpoly, rabbit_high);
-    Renderer swan_renderer(swan_vao, swan);
+    Renderer swan_renderer(swan_vao, swan_vbo, swan, false);
 
     Flock flock = Flock();
     for(int i = 0 ; i < params._boids_number ; i++)
@@ -244,11 +150,11 @@ int main()
             //camera.moveFront(-1.f);
             player.move_front(ctx.delta_time());
         }
-        if (ctx.key_is_pressed(GLFW_KEY_SPACE)) {
+        if (ctx.key_is_pressed(GLFW_KEY_U)) {
             //camera.moveFront(-1.f);
             player.move_up(ctx.delta_time());
         }
-        if (ctx.key_is_pressed(GLFW_KEY_LEFT_ALT)) {
+        if (ctx.key_is_pressed(GLFW_KEY_D)) {
             //camera.moveFront(-1.f);
             player.move_up(-ctx.delta_time());
         }
@@ -263,6 +169,7 @@ int main()
         glEnable(GL_CULL_FACE); //Hide the back faces of the model
         glEnable(GL_DEPTH_TEST); //Checks if the fragment has to be rendered based on it's z value
 
+        //pour les bouts de code comme ça peut être faire en dehors de la classe des fonctions pour chaque cas particulier car c'est un peu chiant sinon
         //Drawing the cube
         draw_shader.use();
         matricesCube(gm, cube_ugm);
@@ -274,6 +181,7 @@ int main()
 
         cube_renderer.drawClassic();
 
+        //draw the swan
         matricesSwan(gm, swan_ugm, player);
         glBindTexture(GL_TEXTURE_2D, swan_texture.texture_id);
 
@@ -303,6 +211,7 @@ int main()
             boids_highpoly_vbo.unbind();
         }
 
+        //draw boids
         shader.use();
         
         for(size_t i = 0; i<params._boids_number; i++)
@@ -319,6 +228,7 @@ int main()
         else boids_highpoly_renderer.drawInstanced(params._boids_number);
 
         glClear(GL_DEPTH_BUFFER_BIT);  
+
         if(((int)(ctx.time()) % 5) == 0 && ((int)(ctx.time() -ctx.delta_time()) % 5) != 0) //On ne change d'état que toutes les 5 secondes
         {
             double random_uniform = rand01();
