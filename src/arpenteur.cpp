@@ -43,3 +43,27 @@ void Arpenteur::move_third_person(const p6::Context &ctx, FreeflyCamera &camera)
         camera.rotate_up(-50.f * ctx.mouse_delta().y);
     }
 }
+
+void Arpenteur::shape_state(const p6::Context &ctx, MarkovChain &mc, std::string &s)
+{
+    if(((int)(ctx.time()) % 5) == 0 && ((int)(ctx.time() -ctx.delta_time()) % 5) != 0) //On ne change d'état que toutes les 5 secondes
+    {
+        double random_uniform = rand01();
+        if (random_uniform < mc.getState().x) 
+        {   
+            s = "En Forme";
+            set_speed(20.f);
+        }
+        else if (random_uniform < mc.getState().x + mc.getState().y) 
+        {
+            s = "Fatigue Legere";
+            set_speed(10.f);
+        }
+        else
+        {
+            s = "Fatigue Lourde";
+            set_speed(5.f);
+        }
+        mc.nextState();
+    }
+}

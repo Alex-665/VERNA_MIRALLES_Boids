@@ -78,12 +78,8 @@ int main()
     swan_vao.gen();
     Renderer swan_renderer(swan_vao, swan_vbo, swan, false);
 
-    Flock flock;
-    for(int i = 0 ; i < params._boids_number ; i++)
-    {
-        Boid tmp;
-        flock.add_boid(tmp);
-    }
+    Flock flock(params._boids_number);
+
     Force avoidance(params._multiplicator_avoidance); //Tendance à augmenter la distance inter-boids
     Force alignement(params._multiplicator_alignement); //Tendance à former des gros groupes facilement
     Force centering(params._multiplicator_centering); //Tendance à diminuer le rayon d'un groupe de boid
@@ -130,10 +126,6 @@ int main()
         gm.proj_matrix = glm::perspective(glm::radians(56.f), ctx.aspect_ratio(), 0.1f, 200.f);
 
         player.move_third_person(ctx, camera);
-        //if (ctx.mouse_button_is_pressed(p6::Button::Left)) {
-        //    camera.rotate_left(-50.f * ctx.mouse_delta().x);
-        //    camera.rotate_up(-50.f * ctx.mouse_delta().y);
-        //}
         gm.view_matrix = camera.get_view_matrix(player.get_position());
         point_1.set_position(player.get_position());
         light_positions[0] = gm.view_matrix * glm::vec4(point_1.get_position(), 1);
@@ -203,26 +195,7 @@ int main()
 
         glClear(GL_DEPTH_BUFFER_BIT);  
 
-        if(((int)(ctx.time()) % 5) == 0 && ((int)(ctx.time() -ctx.delta_time()) % 5) != 0) //On ne change d'état que toutes les 5 secondes
-        {
-            double random_uniform = rand01();
-            if (random_uniform < etat.getState().x) 
-            {   
-                etat_string = "En Forme";
-                player.set_speed(20.f);
-            }
-            else if (random_uniform < etat.getState().x + etat.getState().y) 
-            {
-                etat_string = "Fatigue Legere";
-                player.set_speed(10.f);
-            }
-            else
-            {
-                etat_string = "Fatigue Lourde";
-                player.set_speed(5.f);
-            }
-            etat.nextState();
-        }
+        player.shape_state(ctx, etat, etat_string);
         computeEvolution(flock, ctx, birth_time, death_time, params._boids_number);
     };
 
