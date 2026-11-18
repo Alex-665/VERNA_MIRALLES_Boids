@@ -1,3 +1,8 @@
+# Goose boids
+
+C++, OpenGL and p6 project that simulate boids and their interaction with a goose chasing them.
+
+
 # Simple-p6-Setup
 
 This template contains all the things you need to get started with a clean and modern C++ project (formatter, linter, tests, continuous integration, etc.).
